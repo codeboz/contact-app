@@ -1,10 +1,13 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using CBZ.ContactApp.Data;
 using Microsoft.AspNet.OData.Builder;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNet.OData.Formatter;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -28,6 +31,11 @@ namespace CBZ.ContactApp
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddDbContext<ContactDbContext>( builder =>
+            {
+                if (builder == null) throw new ArgumentNullException(nameof(builder));
+                builder.UseNpgsql(Configuration.GetConnectionString("contactDb"));
+            });
             services.AddOData();
             services.AddSwaggerGen(c =>
             {
@@ -56,6 +64,7 @@ namespace CBZ.ContactApp
 
             app.UseEndpoints(endpoints =>
             {
+                if (endpoints == null) throw new ArgumentNullException(nameof(endpoints));
                 endpoints.MapControllers();
                 endpoints.Select().Filter().OrderBy().Count();
                 endpoints.MapODataRoute("odata", "odata", GetEdmModel());

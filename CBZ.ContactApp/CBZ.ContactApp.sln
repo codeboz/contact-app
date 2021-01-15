@@ -2,6 +2,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CBZ.ContactApp", "CBZ.ContactApp\CBZ.ContactApp.csproj", "{D5DEB7C3-A9A3-4D7F-8455-21CE4A6162BE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CBZ.ContactApp.Data", "CBZ.ContactApp.Data\CBZ.ContactApp.Data.csproj", "{605D6E95-C024-4624-995A-02EDEDC2353D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CBZ.ContactApp.Migrations", "CBZ.ContactApp.Migrations\CBZ.ContactApp.Migrations.csproj", "{72761FDB-2A25-479A-96E4-F2A3EA467274}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +16,13 @@ Global
 		{D5DEB7C3-A9A3-4D7F-8455-21CE4A6162BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D5DEB7C3-A9A3-4D7F-8455-21CE4A6162BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D5DEB7C3-A9A3-4D7F-8455-21CE4A6162BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{605D6E95-C024-4624-995A-02EDEDC2353D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{605D6E95-C024-4624-995A-02EDEDC2353D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{605D6E95-C024-4624-995A-02EDEDC2353D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{605D6E95-C024-4624-995A-02EDEDC2353D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72761FDB-2A25-479A-96E4-F2A3EA467274}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72761FDB-2A25-479A-96E4-F2A3EA467274}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72761FDB-2A25-479A-96E4-F2A3EA467274}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72761FDB-2A25-479A-96E4-F2A3EA467274}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

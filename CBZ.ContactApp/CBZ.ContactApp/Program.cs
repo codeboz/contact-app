@@ -10,10 +10,10 @@ namespace CBZ.ContactApp
 {
     public static class Program
     {
-        public static IConfiguration Configuration { get; } = new ConfigurationBuilder()
+        private static IConfiguration Configuration { get; } = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddEnvironmentVariables()
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"appsettings.json",  false,  true)
             .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true)
             .Build();
         public static void Main(string[] args)
@@ -29,7 +29,7 @@ namespace CBZ.ContactApp
             });
             try
             {
-                AppDomain.CurrentDomain.ProcessExit += (s, e) => Log.CloseAndFlush();
+                AppDomain.CurrentDomain.ProcessExit += (_, _) => Log.CloseAndFlush();
                 var iWebHost = CreateHostBuilder(args).Build();
                 Log.Information("Getting the motors running");
                 iWebHost.Run();
@@ -50,6 +50,5 @@ namespace CBZ.ContactApp
                     builder.UseStartup<Startup>();
                     builder.UseConfiguration(Configuration);
                 }).UseSerilog();
-        
     }
 }
