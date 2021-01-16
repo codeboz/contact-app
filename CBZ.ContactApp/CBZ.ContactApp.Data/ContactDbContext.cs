@@ -7,6 +7,12 @@ namespace CBZ.ContactApp.Data
 {
     public class ContactDbContext : DbContext
     {
+        public DbSet<Contact> Contacts { get; set; }
+        public DbSet<Info> Infos { get; set; }
+        public DbSet<InfoType> InfoTypes { get; set; }
+        public DbSet<ReportRequest> ReportRequests { get; set; }
+        public DbSet<ReportState> ReportStates { get; set; }
+        
         public ContactDbContext(DbContextOptions<ContactDbContext> options)
             : base(options)
         {
