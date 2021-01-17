@@ -95,6 +95,13 @@ namespace CBZ.ContactApp
             infosEntitySetSet.EntityType.HasKey(e => e.ContactId);
             infosEntitySetSet.EntityType.HasKey(e => e.InfoTypeId);
             
+            //InfoType
+            //EntitySet
+            var infoTypesEntitySetSet= builder.EntitySet<InfoType>("InfoTypes");
+            infoTypesEntitySetSet.EntityType.HasKey(e => e.Id);
+            
+
+            
             // builder.EntitySet<InfoType>("InfoTypes");
             // builder.EntitySet<ReportRequest>("ReportRequests");
             // builder.EntitySet<ReportState>("ReportState");
