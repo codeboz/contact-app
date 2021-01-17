@@ -75,11 +75,13 @@ namespace CBZ.ContactApp
         private IEdmModel GetEdmModel()
         {
             var builder = new ODataConventionModelBuilder();
-            //EntitySet Contact
+            builder.Namespace = "Ext";
+            
+            //Contact
+            //EntitySet
             var contactsEntitySetSet= builder.EntitySet<Contact>("Contacts");
             contactsEntitySetSet.EntityType.HasKey(e => e.Id);
-            //EntityType Contact
-            builder.Namespace = "Ext";
+            //EntityType
             var contactsEntityType= builder.EntityType<Contact>();
             //Functions
             var getContactsByNameSurname = contactsEntityType.Collection.Function("ByNameSurname");
@@ -87,8 +89,12 @@ namespace CBZ.ContactApp
             getContactsByNameSurname.Parameter<string>("surname");
             getContactsByNameSurname.ReturnsFromEntitySet<Contact>("Contacts");
             
+            //Info
+            //EntitySet
+            var infosEntitySetSet= builder.EntitySet<Info>("Infos");
+            infosEntitySetSet.EntityType.HasKey(e => e.ContactId);
+            infosEntitySetSet.EntityType.HasKey(e => e.InfoTypeId);
             
-            // builder.EntitySet<Info>("Infos");
             // builder.EntitySet<InfoType>("InfoTypes");
             // builder.EntitySet<ReportRequest>("ReportRequests");
             // builder.EntitySet<ReportState>("ReportState");

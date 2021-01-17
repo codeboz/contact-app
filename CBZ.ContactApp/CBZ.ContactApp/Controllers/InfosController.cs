@@ -24,15 +24,14 @@ namespace CBZ.ContactApp.Controllers
     public class InfosController:ODataController
     {
         private readonly ContactDbContext _dbContext;
-        private readonly ILogger<ContactsController> _logger;
+        private readonly ILogger<InfosController> _logger;
 
-        public InfosController(ContactDbContext context, ILogger<ContactsController> logger)
+        public InfosController(ContactDbContext context, ILogger<InfosController> logger)
         {
             _dbContext = context;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        [HttpGet]
         public ActionResult Get()
         {
             try
@@ -46,103 +45,87 @@ namespace CBZ.ContactApp.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(exception:ex,message:"Get Contacts Error");
+                _logger.LogError(exception:ex,message:"Get Infos Error");
                 return NotFound();
             }
         }
         
-        public async Task<IActionResult> Get(Guid key)
+        public async Task<IActionResult> Get(Guid contactId,int infoTypeId)
         {
             try
             {
-                var contact = await _dbContext.Contacts.SingleOrDefaultAsync(c => c.Id == key);
-                if (contact == null)
+                var i = await _dbContext.Infos.SingleOrDefaultAsync(i=>i.ContactId==contactId && i.InfoTypeId==infoTypeId);
+                if (i == null)
                 {
                     return NoContent();
                 }
-                return Ok(contact);
+                return Ok(i);
             }
             catch (Exception ex)
             {
-                _logger.LogError(exception:ex,message:"Get Contacts Error");
+                _logger.LogError(exception:ex,message:"Get Infos by Keys Error");
                 return NotFound();
             }
         }
-        
-        [HttpGet]
-        public ActionResult ByNameSurname(string name,string surname)
+        public async Task<IActionResult> Post([FromBody]Info info)
         {
             try
             {
-                var contacts = _dbContext.Contacts.Where(c => c.Name == name && c.Surname == surname);
-                return Ok(contacts);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e,"Contact.ByNameSurname");
-                return NoContent();
-            }
-        }
-
-        public async Task<IActionResult> Post([FromBody]Contact contact)
-        {
-            var con = await _dbContext.Contacts.AddAsync(contact);
-            try
-            {
+                var i = await _dbContext.Infos.AddAsync(info);
                 await _dbContext.SaveChangesAsync();
+                Ok(i);
             }
             catch (Exception exception)
             {
-                _logger.LogWarning(exception,"Create problem");
-                return BadRequest();
+                _logger.LogWarning(exception,"Info creation problem");
             }
-            return Ok(con);
+            return BadRequest();
         }
         
-        public async Task<IActionResult> Put([FromBody]Contact contact)
+        public async Task<IActionResult> Put([FromBody]Info info)
         {
             try
             {
-                var con = _dbContext.Contacts.Update(contact);
+                var i = _dbContext.Infos.Update(info);
                 await _dbContext.SaveChangesAsync();
-                return Ok(con);
+                return Ok(i);
             }
             catch (Exception exception)
             {
                 _logger.LogWarning(exception,"Update problem");
-                return BadRequest();
             }
+            return NotFound();
         }
         
-        public async Task<IActionResult> Patch(Guid id,[FromBody] Delta<Contact> contact)
+        public async Task<IActionResult> Patch(Guid id,[FromBody] Delta<Info> info)
         {
             try
             {
-                var con = _dbContext.Contacts.Update(contact.GetInstance());
+                var i = _dbContext.Infos.Update(info.GetInstance());
                 await _dbContext.SaveChangesAsync();
-                return Ok(con);
+                return Ok(i);
             }
             catch (Exception exception)
             {
                 _logger.LogWarning(exception,"Update problem");
-                return BadRequest();
             }
+            return NotFound();
         }
         
-        public async Task<IActionResult> Delete([FromBody]Guid id)
+        public async Task<IActionResult> Delete([FromBody] Guid contactId,[FromBody]int infoTypeId)
         {
             try
             {
-                var contactDeleted =await _dbContext.Contacts.FirstOrDefaultAsync(c => c.Id == id);
-                var con = _dbContext.Contacts.Remove(contactDeleted);
+                var infoDeleted =await _dbContext.Infos.FirstOrDefaultAsync(i=>i.ContactId == contactId && i.InfoTypeId==infoTypeId);
+                var i = _dbContext.Infos.Remove(infoDeleted);
                 await _dbContext.SaveChangesAsync();
-                return Ok(con);
+                return Ok(i);
             }
             catch (Exception exception)
             {
                 _logger.LogWarning(exception,"Update problem");
-                return BadRequest();
             }
+            return NotFound();
         }
    
     }
