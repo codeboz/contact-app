@@ -9,8 +9,8 @@ namespace CBZ.ContactApp.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<Contact> builder)
         {   //Shadow properties
-            builder.Property<DateTime>("Inserted");
-            builder.Property<DateTime>("Updated");
+            builder.Property<DateTime>("Inserted").ValueGeneratedOnAdd();
+            builder.Property<DateTime>("Updated").ValueGeneratedOnUpdate();
             builder.Property(c => c.Name).IsRequired();
             builder.Property(c => c.Surname).IsRequired();
             //Relations

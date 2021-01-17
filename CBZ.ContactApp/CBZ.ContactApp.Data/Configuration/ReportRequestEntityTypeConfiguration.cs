@@ -10,7 +10,7 @@ namespace CBZ.ContactApp.Data.Configuration
         public void Configure(EntityTypeBuilder<ReportRequest> builder)
         {
             //Shadow properties
-            builder.Property<DateTime>("Requested");
+            builder.Property<DateTime>("Requested").ValueGeneratedOnAdd();
             builder.Property<int>("ReportStateId");
             //Relations
             builder.HasOne(rr => rr.ReportState);
