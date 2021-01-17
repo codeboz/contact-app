@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CBZ.ContactApp.Data;
 using CBZ.ContactApp.Data.Model;
+using CBZ.ContactApp.Data.Repository;
 using Serilog;
 
 namespace CBZ.ContactApp
@@ -33,11 +34,25 @@ namespace CBZ.ContactApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            
+            services.AddScoped<IRepository<Contact>, ContactRepository>();
+            services.AddScoped<IRepository<Info>, InfoRepository>();
+            services.AddScoped<IRepository<InfoType>, InfoTypeRepository>();
+            services.AddScoped<IRepository<ReportRequest>, ReportRequestRepository>();
+            services.AddScoped<IRepository<ReportState>, ReportStateRepository>();
+            
             services.AddDbContext<ContactDbContext>( builder =>
             {
                 if (builder == null) throw new ArgumentNullException(nameof(builder));
-                builder.UseNpgsql(Configuration.GetConnectionString("contactDb"));
+                builder.UseNpgsql(Configuration.GetConnectionString("contactDb"),npgsqlOptionsAction: optionsBuilder =>
+                {
+                    optionsBuilder.EnableRetryOnFailure(
+                        10,
+                        TimeSpan.FromSeconds(30),
+                        null);
+                } );
             });
+            
             services.AddControllers();
             services.AddOData(opt =>
             {
