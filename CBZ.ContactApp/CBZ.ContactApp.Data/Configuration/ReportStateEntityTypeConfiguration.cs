@@ -9,11 +9,11 @@ namespace CBZ.ContactApp.Data.Configuration
 {
     public class ReportStateEntityTypeConfiguration:IEntityTypeConfiguration<ReportState>
     {
-        public static IEnumerable<object> ReportStateSeed =>
-            new List<object>
+        public static IEnumerable<ReportState> ReportStateSeed =>
+            new List<ReportState>
             {
-                new {Id = 1, Name = "Preparing", Inserted=DateTime.Now, Updated=DateTime.Now},
-                new {Id = 2, Name = "Ready", Inserted=DateTime.Now, Updated=DateTime.Now}
+                new ReportState{Id = 1, Name = "Preparing"},
+                new ReportState{Id = 2, Name = "Ready"}
             };
         public void Configure(EntityTypeBuilder<ReportState> builder)
         {

@@ -7,6 +7,7 @@ namespace CBZ.ContactApp.Data.Model
         public  Guid Id { get; set; }
         public  string Location { get; set; }
         public DateTime Requested { get; set; }
+        public int ReportStateId { get; set; }
         public virtual ReportState ReportState { get; set; }
     }
 }

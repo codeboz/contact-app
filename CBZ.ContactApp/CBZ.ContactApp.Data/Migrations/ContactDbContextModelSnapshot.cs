@@ -57,46 +57,36 @@ namespace CBZ.ContactApp.Data.Migrations
                         {
                             Id = new Guid("3999bbc4-751e-4fe5-9e72-4c6e88f6cff4"),
                             Company = "A",
-                            Inserted = new DateTime(2021, 1, 18, 1, 2, 49, 851, DateTimeKind.Local).AddTicks(4158),
                             Name = "A",
-                            Surname = "Aa",
-                            Updated = new DateTime(2021, 1, 18, 1, 2, 49, 852, DateTimeKind.Local).AddTicks(227)
+                            Surname = "Aa"
                         },
                         new
                         {
                             Id = new Guid("3182b605-a8cb-4eb4-81fb-81129159f095"),
                             Company = "B",
-                            Inserted = new DateTime(2021, 1, 18, 1, 2, 49, 852, DateTimeKind.Local).AddTicks(1154),
                             Name = "B",
-                            Surname = "Bb",
-                            Updated = new DateTime(2021, 1, 18, 1, 2, 49, 852, DateTimeKind.Local).AddTicks(1157)
+                            Surname = "Bb"
                         },
                         new
                         {
                             Id = new Guid("b75cdf77-243b-4eb8-ab08-c44dcddb70ef"),
                             Company = "C",
-                            Inserted = new DateTime(2021, 1, 18, 1, 2, 49, 852, DateTimeKind.Local).AddTicks(1160),
                             Name = "C",
-                            Surname = "Cc",
-                            Updated = new DateTime(2021, 1, 18, 1, 2, 49, 852, DateTimeKind.Local).AddTicks(1161)
+                            Surname = "Cc"
                         },
                         new
                         {
                             Id = new Guid("342ea3e1-6e66-4162-a7c0-390c2a5aa263"),
                             Company = "D",
-                            Inserted = new DateTime(2021, 1, 18, 1, 2, 49, 852, DateTimeKind.Local).AddTicks(1164),
                             Name = "D",
-                            Surname = "Dd",
-                            Updated = new DateTime(2021, 1, 18, 1, 2, 49, 852, DateTimeKind.Local).AddTicks(1165)
+                            Surname = "Dd"
                         },
                         new
                         {
                             Id = new Guid("19c45392-88ba-4f96-92d4-c72024d48f81"),
                             Company = "E",
-                            Inserted = new DateTime(2021, 1, 18, 1, 2, 49, 852, DateTimeKind.Local).AddTicks(1167),
                             Name = "E",
-                            Surname = "Ee",
-                            Updated = new DateTime(2021, 1, 18, 1, 2, 49, 852, DateTimeKind.Local).AddTicks(1168)
+                            Surname = "Ee"
                         });
                 });
 
@@ -133,73 +123,55 @@ namespace CBZ.ContactApp.Data.Migrations
                         {
                             ContactId = new Guid("3999bbc4-751e-4fe5-9e72-4c6e88f6cff4"),
                             InfoTypeId = 1,
-                            Data = "11111111",
-                            Inserted = new DateTime(2021, 1, 18, 1, 2, 49, 859, DateTimeKind.Local).AddTicks(7674),
-                            Updated = new DateTime(2021, 1, 18, 1, 2, 49, 859, DateTimeKind.Local).AddTicks(7699)
+                            Data = "11111111"
                         },
                         new
                         {
                             ContactId = new Guid("3999bbc4-751e-4fe5-9e72-4c6e88f6cff4"),
                             InfoTypeId = 2,
-                            Data = "a@a.com",
-                            Inserted = new DateTime(2021, 1, 18, 1, 2, 49, 859, DateTimeKind.Local).AddTicks(8235),
-                            Updated = new DateTime(2021, 1, 18, 1, 2, 49, 859, DateTimeKind.Local).AddTicks(8237)
+                            Data = "a@a.com"
                         },
                         new
                         {
                             ContactId = new Guid("3999bbc4-751e-4fe5-9e72-4c6e88f6cff4"),
                             InfoTypeId = 3,
-                            Data = "Ankara",
-                            Inserted = new DateTime(2021, 1, 18, 1, 2, 49, 859, DateTimeKind.Local).AddTicks(8240),
-                            Updated = new DateTime(2021, 1, 18, 1, 2, 49, 859, DateTimeKind.Local).AddTicks(8241)
+                            Data = "Ankara"
                         },
                         new
                         {
                             ContactId = new Guid("3182b605-a8cb-4eb4-81fb-81129159f095"),
                             InfoTypeId = 1,
-                            Data = "222222222",
-                            Inserted = new DateTime(2021, 1, 18, 1, 2, 49, 859, DateTimeKind.Local).AddTicks(8243),
-                            Updated = new DateTime(2021, 1, 18, 1, 2, 49, 859, DateTimeKind.Local).AddTicks(8244)
+                            Data = "222222222"
                         },
                         new
                         {
                             ContactId = new Guid("3182b605-a8cb-4eb4-81fb-81129159f095"),
                             InfoTypeId = 2,
-                            Data = "b@b.com",
-                            Inserted = new DateTime(2021, 1, 18, 1, 2, 49, 859, DateTimeKind.Local).AddTicks(8247),
-                            Updated = new DateTime(2021, 1, 18, 1, 2, 49, 859, DateTimeKind.Local).AddTicks(8248)
+                            Data = "b@b.com"
                         },
                         new
                         {
                             ContactId = new Guid("3182b605-a8cb-4eb4-81fb-81129159f095"),
                             InfoTypeId = 3,
-                            Data = "Ankara",
-                            Inserted = new DateTime(2021, 1, 18, 1, 2, 49, 859, DateTimeKind.Local).AddTicks(8255),
-                            Updated = new DateTime(2021, 1, 18, 1, 2, 49, 859, DateTimeKind.Local).AddTicks(8256)
+                            Data = "Ankara"
                         },
                         new
                         {
                             ContactId = new Guid("b75cdf77-243b-4eb8-ab08-c44dcddb70ef"),
                             InfoTypeId = 1,
-                            Data = "333333333",
-                            Inserted = new DateTime(2021, 1, 18, 1, 2, 49, 859, DateTimeKind.Local).AddTicks(8259),
-                            Updated = new DateTime(2021, 1, 18, 1, 2, 49, 859, DateTimeKind.Local).AddTicks(8260)
+                            Data = "333333333"
                         },
                         new
                         {
                             ContactId = new Guid("b75cdf77-243b-4eb8-ab08-c44dcddb70ef"),
                             InfoTypeId = 2,
-                            Data = "c@c.com",
-                            Inserted = new DateTime(2021, 1, 18, 1, 2, 49, 859, DateTimeKind.Local).AddTicks(8262),
-                            Updated = new DateTime(2021, 1, 18, 1, 2, 49, 859, DateTimeKind.Local).AddTicks(8263)
+                            Data = "c@c.com"
                         },
                         new
                         {
                             ContactId = new Guid("b75cdf77-243b-4eb8-ab08-c44dcddb70ef"),
                             InfoTypeId = 3,
-                            Data = "Ankara",
-                            Inserted = new DateTime(2021, 1, 18, 1, 2, 49, 859, DateTimeKind.Local).AddTicks(8265),
-                            Updated = new DateTime(2021, 1, 18, 1, 2, 49, 859, DateTimeKind.Local).AddTicks(8266)
+                            Data = "Ankara"
                         },
                         new
                         {
@@ -271,23 +243,17 @@ namespace CBZ.ContactApp.Data.Migrations
                         new
                         {
                             Id = 1,
-                            Inserted = new DateTime(2021, 1, 18, 1, 2, 49, 855, DateTimeKind.Local).AddTicks(6330),
-                            Name = "Phone",
-                            Updated = new DateTime(2021, 1, 18, 1, 2, 49, 855, DateTimeKind.Local).AddTicks(6355)
+                            Name = "Phone"
                         },
                         new
                         {
                             Id = 2,
-                            Inserted = new DateTime(2021, 1, 18, 1, 2, 49, 855, DateTimeKind.Local).AddTicks(6811),
-                            Name = "Email",
-                            Updated = new DateTime(2021, 1, 18, 1, 2, 49, 855, DateTimeKind.Local).AddTicks(6813)
+                            Name = "Email"
                         },
                         new
                         {
                             Id = 3,
-                            Inserted = new DateTime(2021, 1, 18, 1, 2, 49, 855, DateTimeKind.Local).AddTicks(6815),
-                            Name = "Location",
-                            Updated = new DateTime(2021, 1, 18, 1, 2, 49, 855, DateTimeKind.Local).AddTicks(6816)
+                            Name = "Location"
                         });
                 });
 
@@ -317,15 +283,17 @@ namespace CBZ.ContactApp.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("81ab94a2-891f-4a85-a6b8-b19a68e2cd26"),
+                            Id = new Guid("9fcb7cd9-6e2a-40eb-b1bb-5a052de8ad8d"),
                             Location = "Ankara",
-                            ReportStateId = 1
+                            ReportStateId = 1,
+                            Requested = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
-                            Id = new Guid("c97fa77b-575e-4619-a7b1-b8282ad225f1"),
+                            Id = new Guid("045f216b-0e1c-460d-8108-1084d61abe3f"),
                             Location = "Bursa",
-                            ReportStateId = 2
+                            ReportStateId = 2,
+                            Requested = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });
 
@@ -361,16 +329,12 @@ namespace CBZ.ContactApp.Data.Migrations
                         new
                         {
                             Id = 1,
-                            Inserted = new DateTime(2021, 1, 18, 1, 2, 49, 861, DateTimeKind.Local).AddTicks(2744),
-                            Name = "Preparing",
-                            Updated = new DateTime(2021, 1, 18, 1, 2, 49, 861, DateTimeKind.Local).AddTicks(2774)
+                            Name = "Preparing"
                         },
                         new
                         {
                             Id = 2,
-                            Inserted = new DateTime(2021, 1, 18, 1, 2, 49, 861, DateTimeKind.Local).AddTicks(2786),
-                            Name = "Ready",
-                            Updated = new DateTime(2021, 1, 18, 1, 2, 49, 861, DateTimeKind.Local).AddTicks(2787)
+                            Name = "Ready"
                         });
                 });
 

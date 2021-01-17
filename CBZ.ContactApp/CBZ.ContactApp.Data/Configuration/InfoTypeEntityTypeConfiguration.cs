@@ -8,12 +8,12 @@ namespace CBZ.ContactApp.Data.Configuration
 {
     public class InfoTypeEntityTypeConfiguration:IEntityTypeConfiguration<InfoType>
     {        
-        public static IEnumerable<object> InfoTypeSeed =>
-            new List<object>
+        public static IEnumerable<InfoType> InfoTypeSeed =>
+            new List<InfoType>
             {
-                new {Id = 1, Name = "Phone", Inserted=DateTime.Now, Updated=DateTime.Now},
-                new {Id = 2, Name = "Email", Inserted=DateTime.Now, Updated=DateTime.Now},
-                new {Id = 3, Name = "Location", Inserted=DateTime.Now, Updated=DateTime.Now},
+                new InfoType{Id = 1, Name = "Phone"},
+                new InfoType{Id = 2, Name = "Email"},
+                new InfoType{Id = 3, Name = "Location"},
             };
         public void Configure(EntityTypeBuilder<InfoType> builder)
         {
