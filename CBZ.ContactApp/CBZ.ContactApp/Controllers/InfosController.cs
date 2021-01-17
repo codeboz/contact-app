@@ -46,11 +46,11 @@ namespace CBZ.ContactApp.Controllers
             }
         }
         
-        public ActionResult Get(Guid contactId,int infoTypeId)
+        public ActionResult Get(Guid keyContactId,int keyInfoTypeId)
         {
             try
             {
-                var i = _infoRepository.Find(contactId, infoTypeId as object); 
+                var i = _infoRepository.Find(keyContactId, keyInfoTypeId as object); 
                 if (i == null)
                 {
                     return NoContent();
