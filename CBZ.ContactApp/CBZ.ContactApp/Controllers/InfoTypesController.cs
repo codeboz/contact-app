@@ -50,12 +50,12 @@ namespace CBZ.ContactApp.Controllers
         {
             try
             {
-                var i = await _dbContext.InfoTypes.SingleOrDefaultAsync(i=>i.Id==key);
-                if (i == null)
+                var it = await _dbContext.InfoTypes.SingleOrDefaultAsync(it=>it.Id==key);
+                if (it == null)
                 {
                     return NoContent();
                 }
-                return Ok(i);
+                return Ok(it);
             }
             catch (Exception ex)
             {
@@ -67,9 +67,9 @@ namespace CBZ.ContactApp.Controllers
         {
             try
             {
-                var i = await _dbContext.InfoTypes.AddAsync(infoTypes);
+                var it = await _dbContext.InfoTypes.AddAsync(infoTypes);
                 await _dbContext.SaveChangesAsync();
-                Ok(i);
+                Ok(it);
             }
             catch (Exception exception)
             {
@@ -82,9 +82,9 @@ namespace CBZ.ContactApp.Controllers
         {
             try
             {
-                var i = _dbContext.InfoTypes.Update(infoTypes);
+                var it = _dbContext.InfoTypes.Update(infoTypes);
                 await _dbContext.SaveChangesAsync();
-                return Ok(i);
+                return Ok(it);
             }
             catch (Exception exception)
             {
@@ -97,9 +97,9 @@ namespace CBZ.ContactApp.Controllers
         {
             try
             {
-                var i = _dbContext.InfoTypes.Update(infoTypes.GetInstance());
+                var it = _dbContext.InfoTypes.Update(infoTypes.GetInstance());
                 await _dbContext.SaveChangesAsync();
-                return Ok(i);
+                return Ok(it);
             }
             catch (Exception exception)
             {
@@ -112,10 +112,10 @@ namespace CBZ.ContactApp.Controllers
         {
             try
             {
-                var infoTypesDeleted =await _dbContext.InfoTypes.FirstOrDefaultAsync(i=>i.Id==key);
-                var i = _dbContext.InfoTypes.Remove(infoTypesDeleted);
+                var infoTypesDeleted =await _dbContext.InfoTypes.FirstOrDefaultAsync(it=>it.Id==key);
+                var it = _dbContext.InfoTypes.Remove(infoTypesDeleted);
                 await _dbContext.SaveChangesAsync();
-                return Ok(i);
+                return Ok(it);
             }
             catch (Exception exception)
             {
