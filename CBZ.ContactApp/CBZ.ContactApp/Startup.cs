@@ -1,19 +1,22 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using CBZ.ContactApp.Data;
-using Microsoft.AspNet.OData.Builder;
-using Microsoft.AspNet.OData.Extensions;
-using Microsoft.AspNet.OData.Formatter;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.OData;
+using Microsoft.AspNetCore.OData.Formatter.Deserialization;
+using Microsoft.AspNetCore.OData.Routing;
+using Microsoft.AspNetCore.OData.Routing.Template;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Net.Http.Headers;
 using Microsoft.OData.Edm;
-using Microsoft.OpenApi.Models;
+using Microsoft.OData.ModelBuilder;
+using System.Collections.Generic;
+using System.Linq;
+using CBZ.ContactApp.Data;
+using CBZ.ContactApp.Data.Model;
 using Serilog;
 
 namespace CBZ.ContactApp
@@ -30,19 +33,19 @@ namespace CBZ.ContactApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
             services.AddDbContext<ContactDbContext>( builder =>
             {
                 if (builder == null) throw new ArgumentNullException(nameof(builder));
                 builder.UseNpgsql(Configuration.GetConnectionString("contactDb"));
             });
-            services.AddOData();
-            services.AddSwaggerGen(c =>
+            services.AddControllers();
+            services.AddOData(opt =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo {Title = "CBZ.ContactApp", Version = "v1"});
+                opt.AddModel("v1", GetEdmModel()).Select().Filter().Expand().Count().OrderBy();
+                opt.EnableAttributeRouting = true;
             });
-            
-            SetOutputFormatters(services);
+
+           
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -51,13 +54,12 @@ namespace CBZ.ContactApp
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CBZ.ContactApp v1"));
+              
             }
+            app.UseODataBatching();
+            
             app.UseSerilogRequestLogging();
-
-            //app.UseHttpsRedirection();
-
+            
             app.UseRouting();
 
             app.UseAuthorization();
@@ -66,30 +68,31 @@ namespace CBZ.ContactApp
             {
                 if (endpoints == null) throw new ArgumentNullException(nameof(endpoints));
                 endpoints.MapControllers();
-                endpoints.Select().Filter().OrderBy().Count();
-                endpoints.MapODataRoute("odata", "odata", GetEdmModel());
             });
+            
         }
         
         private IEdmModel GetEdmModel()
         {
             var builder = new ODataConventionModelBuilder();
+            //EntitySet Contact
+            var contactsEntitySetSet= builder.EntitySet<Contact>("Contacts");
+            contactsEntitySetSet.EntityType.HasKey(e => e.Id);
+            //EntityType Contact
+            builder.Namespace = "Ext";
+            var contactsEntityType= builder.EntityType<Contact>();
+            //Functions
+            var getContactsByNameSurname = contactsEntityType.Collection.Function("ByNameSurname");
+            getContactsByNameSurname.Parameter<string>("name");
+            getContactsByNameSurname.Parameter<string>("surname");
+            getContactsByNameSurname.ReturnsFromEntitySet<Contact>("Contacts");
+            
+            
+            // builder.EntitySet<Info>("Infos");
+            // builder.EntitySet<InfoType>("InfoTypes");
+            // builder.EntitySet<ReportRequest>("ReportRequests");
+            // builder.EntitySet<ReportState>("ReportState");
             return builder.GetEdmModel();
-        }
-        
-        private static void SetOutputFormatters(IServiceCollection services)
-        {
-            services.AddMvcCore(options =>
-            {
-                IEnumerable<ODataOutputFormatter> outputFormatters =
-                    options.OutputFormatters.OfType<ODataOutputFormatter>()
-                        .Where(foramtter => foramtter.SupportedMediaTypes.Count == 0);
-
-                foreach (var outputFormatter in outputFormatters)
-                {
-                    outputFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("application/odata"));
-                }
-            });
         }
         
     }
