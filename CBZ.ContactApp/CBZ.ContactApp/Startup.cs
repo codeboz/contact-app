@@ -99,14 +99,16 @@ namespace CBZ.ContactApp
             //EntitySet
             var infoTypesEntitySetSet= builder.EntitySet<InfoType>("InfoTypes");
             infoTypesEntitySetSet.EntityType.HasKey(e => e.Id);
-            
 
-            
+            //ReportRequest
+            //EntitySet
+            var reportRequestsEntitySet= builder.EntitySet<ReportRequest>("ReportRequest");
+            reportRequestsEntitySet.EntityType.HasKey(e => e.Id);
+
             // builder.EntitySet<InfoType>("InfoTypes");
             // builder.EntitySet<ReportRequest>("ReportRequests");
             // builder.EntitySet<ReportState>("ReportState");
             return builder.GetEdmModel();
         }
-        
     }
 }
