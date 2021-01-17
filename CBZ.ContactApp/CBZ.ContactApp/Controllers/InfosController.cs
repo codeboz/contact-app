@@ -50,7 +50,7 @@ namespace CBZ.ContactApp.Controllers
         {
             try
             {
-                var i = await _dbContext.Infos.SingleOrDefaultAsync(i=>i.ContactId==contactId && i.InfoTypeId==infoTypeId);
+                var i = await _dbContext.Infos.SingleOrDefaultAsync(info=>info.ContactId==contactId && info.InfoTypeId==infoTypeId);
                 if (i == null)
                 {
                     return NoContent();
@@ -112,7 +112,7 @@ namespace CBZ.ContactApp.Controllers
         {
             try
             {
-                var infoDeleted =await _dbContext.Infos.FirstOrDefaultAsync(i=>i.ContactId == contactId && i.InfoTypeId==infoTypeId);
+                var infoDeleted =await _dbContext.Infos.FirstOrDefaultAsync(info=>info.ContactId == contactId && info.InfoTypeId==infoTypeId);
                 var i = _dbContext.Infos.Remove(infoDeleted);
                 await _dbContext.SaveChangesAsync();
                 return Ok(i);

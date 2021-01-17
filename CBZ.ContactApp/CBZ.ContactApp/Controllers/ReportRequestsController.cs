@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 
 namespace CBZ.ContactApp.Controllers
 {
- [EnableQuery]
+    [EnableQuery]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -50,7 +50,7 @@ namespace CBZ.ContactApp.Controllers
         {
             try
             {
-                var rr = await _dbContext.ReportRequests.SingleOrDefaultAsync(rr=>rr.Id==key);
+                var rr = await _dbContext.ReportRequests.SingleOrDefaultAsync(reportRequest=>reportRequest.Id==key);
                 if (rr == null)
                 {
                     return NoContent();
@@ -112,7 +112,7 @@ namespace CBZ.ContactApp.Controllers
         {
             try
             {
-                var reportRequestsDeleted =await _dbContext.ReportRequests.FirstOrDefaultAsync(rr=>rr.Id==key);
+                var reportRequestsDeleted =await _dbContext.ReportRequests.FirstOrDefaultAsync(reportRequest=>reportRequest.Id==key);
                 var rr = _dbContext.ReportRequests.Remove(reportRequestsDeleted);
                 await _dbContext.SaveChangesAsync();
                 return Ok(rr);

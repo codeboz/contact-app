@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -9,10 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using CBZ.ContactApp.Data;
 using CBZ.ContactApp.Data.Model;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.OData.Formatter;
 using Microsoft.AspNetCore.OData.Formatter.Value;
 using Microsoft.Extensions.Logging;
-using Serilog;
 
 namespace CBZ.ContactApp.Controllers
 {
