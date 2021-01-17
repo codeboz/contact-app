@@ -102,8 +102,14 @@ namespace CBZ.ContactApp
 
             //ReportRequest
             //EntitySet
-            var reportRequestsEntitySet= builder.EntitySet<ReportRequest>("ReportRequest");
+            var reportRequestsEntitySet= builder.EntitySet<ReportRequest>("ReportRequests");
             reportRequestsEntitySet.EntityType.HasKey(e => e.Id);
+            
+            //ReportState
+            //EntitySet
+            var reportStatesEntitySet= builder.EntitySet<ReportState>("ReportStates");
+            reportStatesEntitySet.EntityType.HasKey(e => e.Id);
+
 
             // builder.EntitySet<InfoType>("InfoTypes");
             // builder.EntitySet<ReportRequest>("ReportRequests");
