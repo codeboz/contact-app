@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Microsoft.EntityFrameworkCore;
 using CBZ.ContactApp.Data;
 using CBZ.ContactApp.Data.Model;
+using CBZ.ContactApp.Data.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.OData.Formatter.Value;
 using Microsoft.Extensions.Logging;
@@ -21,18 +22,20 @@ namespace CBZ.ContactApp.Controllers
     {
         private readonly ContactDbContext _dbContext;
         private readonly ILogger<InfoTypesController> _logger;
+        private readonly IRepository<InfoType> _infoTypeRepository;
 
-        public InfoTypesController(ContactDbContext context, ILogger<InfoTypesController> logger)
+        public InfoTypesController(ContactDbContext context, ILogger<InfoTypesController> logger, IRepository<InfoType> repository)
         {
             _dbContext = context;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _infoTypeRepository = repository;
         }
 
         public ActionResult Get()
         {
             try
             {
-                var infoTypes=_dbContext.InfoTypes.AsQueryable();
+                var infoTypes=_infoTypeRepository.Get();
                 if (infoTypes == null)
                 {
                     return NoContent();
@@ -46,11 +49,11 @@ namespace CBZ.ContactApp.Controllers
             }
         }
         
-        public async Task<IActionResult> Get(int key)
+        public ActionResult Get(int key)
         {
             try
             {
-                var it = await _dbContext.InfoTypes.SingleOrDefaultAsync(infoType=>infoType.Id==key);
+                var it = _infoTypeRepository.Find(key as object);
                 if (it == null)
                 {
                     return NoContent();
@@ -63,13 +66,13 @@ namespace CBZ.ContactApp.Controllers
                 return NotFound();
             }
         }
-        public async Task<IActionResult> Post([FromBody]InfoType infoTypes)
+        
+        public ActionResult Post([FromBody]InfoType infoTypes)
         {
             try
             {
-                var it = await _dbContext.InfoTypes.AddAsync(infoTypes);
-                await _dbContext.SaveChangesAsync();
-                Ok(it);
+                var it = _infoTypeRepository.Add(infoTypes);
+                Ok(it.Result);
             }
             catch (Exception exception)
             {

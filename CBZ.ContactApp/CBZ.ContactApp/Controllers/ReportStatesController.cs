@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Threading.Tasks;
 using CBZ.ContactApp.Data;
 using CBZ.ContactApp.Data.Model;
+using CBZ.ContactApp.Data.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OData.Formatter.Value;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace CBZ.ContactApp.Controllers
@@ -21,18 +19,20 @@ namespace CBZ.ContactApp.Controllers
     {
         private readonly ContactDbContext _dbContext;
         private readonly ILogger<ReportStatesController> _logger;
+        private readonly IRepository<ReportState> _reportStateRepository;
 
-        public ReportStatesController(ContactDbContext context, ILogger<ReportStatesController> logger)
+        public ReportStatesController(ContactDbContext context, ILogger<ReportStatesController> logger, IRepository<ReportState> reportStateRepository)
         {
             _dbContext = context;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _reportStateRepository = reportStateRepository;
         }
 
         public ActionResult Get()
         {
             try
             {
-                var reportRequests=_dbContext.ReportStates.AsQueryable();
+                var reportRequests=_reportStateRepository.Get();
                 if (reportRequests == null)
                 {
                     return NoContent();
@@ -46,16 +46,17 @@ namespace CBZ.ContactApp.Controllers
             }
         }
         
-        public async Task<IActionResult> Get(int key)
+        public ActionResult Get(int key)
         {
             try
             {
-                var rs = await _dbContext.ReportStates.SingleOrDefaultAsync(reportState => reportState.Id==key);
-                if (rs == null)
+                var rs = _reportStateRepository.Find(key as object);
+                if (rs.Exception != null) throw rs.Exception;
+                if (rs.Result == null)
                 {
                     return NoContent();
                 }
-                return Ok(rs);
+                return Ok(rs.Result);
             }
             catch (Exception ex)
             {
@@ -63,13 +64,13 @@ namespace CBZ.ContactApp.Controllers
                 return NotFound();
             }
         }
-        public async Task<IActionResult> Post([FromBody] ReportState reportStates)
+        public ActionResult Post([FromBody] ReportState reportStates)
         {
             try
             {
-                var rs = await _dbContext.ReportStates.AddAsync(reportStates);
-                await _dbContext.SaveChangesAsync();
-                Ok(rs);
+                var rs =_reportStateRepository.Add(reportStates);
+                if (rs.Exception != null) throw rs.Exception;
+                Ok(rs.Result);
             }
             catch (Exception exception)
             {
@@ -78,13 +79,13 @@ namespace CBZ.ContactApp.Controllers
             return BadRequest();
         }
         
-        public async Task<IActionResult> Put([FromBody] ReportState reportRequests)
+        public ActionResult Put([FromBody] ReportState reportRequests)
         {
             try
             {
-                var rs = _dbContext.ReportStates.Update(reportRequests);
-                await _dbContext.SaveChangesAsync();
-                return Ok(rs);
+                var rs = _reportStateRepository.Update(reportRequests);
+                if (rs.Exception != null) throw rs.Exception;
+                return Ok(rs.Result);
             }
             catch (Exception exception)
             {
@@ -93,29 +94,14 @@ namespace CBZ.ContactApp.Controllers
             return NotFound();
         }
         
-        public async Task<IActionResult> Patch(Guid id,[FromBody] Delta<ReportState> reportStates)
+        public ActionResult Delete([FromBody] int key)
         {
             try
             {
-                var rs = _dbContext.ReportStates.Update(reportStates.GetInstance());
-                await _dbContext.SaveChangesAsync();
-                return Ok(rs);
-            }
-            catch (Exception exception)
-            {
-                _logger.LogWarning(exception,"Report request update problem");
-            }
-            return NotFound();
-        }
-        
-        public async Task<IActionResult> Delete([FromBody] int key)
-        {
-            try
-            {
-                var reportRequestsDeleted =await _dbContext.ReportStates.FirstOrDefaultAsync(reportState=>reportState.Id==key);
-                var rs = _dbContext.ReportStates.Remove(reportRequestsDeleted);
-                await _dbContext.SaveChangesAsync();
-                return Ok(rs);
+                var reportRequestsDeleted = _reportStateRepository.Find(key as object);
+                if (reportRequestsDeleted.Exception != null) throw reportRequestsDeleted.Exception;
+                var rs = _reportStateRepository.Remove(reportRequestsDeleted.Result);
+                return Ok(rs.Result);
             }
             catch (Exception exception)
             {
@@ -123,6 +109,5 @@ namespace CBZ.ContactApp.Controllers
             }
             return NotFound();
         }
-   
     }
 }

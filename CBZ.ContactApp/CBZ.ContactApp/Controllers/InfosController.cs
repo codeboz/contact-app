@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Threading.Tasks;
+using CBZ.ContactApp.Data;
+using CBZ.ContactApp.Data.Model;
+using CBZ.ContactApp.Data.Repository;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
-using Microsoft.EntityFrameworkCore;
-using CBZ.ContactApp.Data;
-using CBZ.ContactApp.Data.Model;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.OData.Formatter.Value;
 using Microsoft.Extensions.Logging;
 
 namespace CBZ.ContactApp.Controllers
@@ -21,18 +19,20 @@ namespace CBZ.ContactApp.Controllers
     {
         private readonly ContactDbContext _dbContext;
         private readonly ILogger<InfosController> _logger;
+        private readonly IRepository<Info> _infoRepository;
 
-        public InfosController(ContactDbContext context, ILogger<InfosController> logger)
+        public InfosController(ContactDbContext context, ILogger<InfosController> logger, IRepository<Info> repository)
         {
             _dbContext = context;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _infoRepository = repository;
         }
 
         public ActionResult Get()
         {
             try
             {
-                var infos=_dbContext.Infos.AsQueryable();
+                var infos=_infoRepository.Get();
                 if (infos == null)
                 {
                     return NoContent();
@@ -46,16 +46,16 @@ namespace CBZ.ContactApp.Controllers
             }
         }
         
-        public async Task<IActionResult> Get(Guid contactId,int infoTypeId)
+        public ActionResult Get(Guid contactId,int infoTypeId)
         {
             try
             {
-                var i = await _dbContext.Infos.SingleOrDefaultAsync(info=>info.ContactId==contactId && info.InfoTypeId==infoTypeId);
+                var i = _infoRepository.Find(contactId, infoTypeId as object); 
                 if (i == null)
                 {
                     return NoContent();
                 }
-                return Ok(i);
+                return Ok(i.Result);
             }
             catch (Exception ex)
             {
@@ -63,13 +63,12 @@ namespace CBZ.ContactApp.Controllers
                 return NotFound();
             }
         }
-        public async Task<IActionResult> Post([FromBody]Info info)
+        public ActionResult Post([FromBody]Info info)
         {
             try
             {
-                var i = await _dbContext.Infos.AddAsync(info);
-                await _dbContext.SaveChangesAsync();
-                Ok(i);
+                var i = _infoRepository.Add(info);
+                Ok(i.Result);
             }
             catch (Exception exception)
             {
@@ -78,13 +77,12 @@ namespace CBZ.ContactApp.Controllers
             return BadRequest();
         }
         
-        public async Task<IActionResult> Put([FromBody]Info info)
+        public ActionResult Put([FromBody]Info info)
         {
             try
             {
-                var i = _dbContext.Infos.Update(info);
-                await _dbContext.SaveChangesAsync();
-                return Ok(i);
+                var i = _infoRepository.Update(info);
+                return Ok(i.Result);
             }
             catch (Exception exception)
             {
@@ -92,14 +90,14 @@ namespace CBZ.ContactApp.Controllers
             }
             return NotFound();
         }
-        
-        public async Task<IActionResult> Patch(Guid id,[FromBody] Delta<Info> info)
+
+        public ActionResult Delete([FromBody] Guid contactId,[FromBody]int infoTypeId)
         {
             try
             {
-                var i = _dbContext.Infos.Update(info.GetInstance());
-                await _dbContext.SaveChangesAsync();
-                return Ok(i);
+                var infoDeleted = _infoRepository.Find(contactId, infoTypeId as object);
+                var i = _infoRepository.Remove(infoDeleted.Result);
+                return Ok(i.Result);
             }
             catch (Exception exception)
             {
@@ -107,22 +105,5 @@ namespace CBZ.ContactApp.Controllers
             }
             return NotFound();
         }
-        
-        public async Task<IActionResult> Delete([FromBody] Guid contactId,[FromBody]int infoTypeId)
-        {
-            try
-            {
-                var infoDeleted =await _dbContext.Infos.FirstOrDefaultAsync(info=>info.ContactId == contactId && info.InfoTypeId==infoTypeId);
-                var i = _dbContext.Infos.Remove(infoDeleted);
-                await _dbContext.SaveChangesAsync();
-                return Ok(i);
-            }
-            catch (Exception exception)
-            {
-                _logger.LogWarning(exception,"Update problem");
-            }
-            return NotFound();
-        }
-   
     }
 }

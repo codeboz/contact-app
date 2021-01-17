@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
-using Microsoft.EntityFrameworkCore;
 using CBZ.ContactApp.Data;
 using CBZ.ContactApp.Data.Model;
+using CBZ.ContactApp.Data.Repository;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.OData.Formatter.Value;
 using Microsoft.Extensions.Logging;
 
 namespace CBZ.ContactApp.Controllers
@@ -22,18 +19,20 @@ namespace CBZ.ContactApp.Controllers
     {
         private readonly ContactDbContext _dbContext;
         private readonly ILogger<ContactsController> _logger;
+        private readonly IRepository<Contact> _contactRepository;
 
-        public ContactsController(ContactDbContext context, ILogger<ContactsController> logger)
+        public ContactsController(ContactDbContext context, ILogger<ContactsController> logger,IRepository<Contact> contactRepository)
         {
             _dbContext = context;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _contactRepository = contactRepository;
         }
         
         public ActionResult Get()
         {
             try
             {
-                var contacts=_dbContext.Contacts.AsQueryable();
+                var contacts=_contactRepository.Get();
                 if (contacts == null)
                 {
                     return NoContent();
@@ -47,16 +46,16 @@ namespace CBZ.ContactApp.Controllers
             }
         }
         
-        public async Task<IActionResult> Get(Guid key)
+        public ActionResult Get(Guid key)
         {
             try
             {
-                var contact = await _dbContext.Contacts.SingleOrDefaultAsync(c => c.Id == key);
+                var contact = _contactRepository.Find(key as object);
                 if (contact == null)
                 {
                     return NoContent();
                 }
-                return Ok(contact);
+                return Ok(contact.Result);
             }
             catch (Exception ex)
             {
@@ -70,7 +69,7 @@ namespace CBZ.ContactApp.Controllers
         {
             try
             {
-                var contacts = _dbContext.Contacts.Where(c => c.Name == name && c.Surname == surname);
+                var contacts = _contactRepository.Where(i=>i.Name==name && i.Surname==surname);
                 return Ok(contacts);
             }
             catch (Exception e)
@@ -80,28 +79,27 @@ namespace CBZ.ContactApp.Controllers
             }
         }
 
-        public async Task<IActionResult> Post([FromBody]Contact contact)
+        public ActionResult Post([FromBody]Contact contact)
         {
-            var con = await _dbContext.Contacts.AddAsync(contact);
             try
             {
-                await _dbContext.SaveChangesAsync();
+                var con=_contactRepository.Add(contact);
+                return Ok(con.Result);
             }
             catch (Exception exception)
             {
                 _logger.LogWarning(exception,"Contact creation problem");
                 return BadRequest();
             }
-            return Ok(con);
+          
         }
         
-        public async Task<IActionResult> Put([FromBody]Contact contact)
+        public ActionResult Put([FromBody]Contact contact)
         {
             try
             {
-                var con = _dbContext.Contacts.Update(contact);
-                await _dbContext.SaveChangesAsync();
-                return Ok(con);
+                var con = _contactRepository.Update(contact);
+                return Ok(con.Result);
             }
             catch (Exception exception)
             {
@@ -110,29 +108,13 @@ namespace CBZ.ContactApp.Controllers
             }
         }
         
-        public async Task<IActionResult> Patch(Guid id,[FromBody] Delta<Contact> contact)
+        public ActionResult Delete([FromBody]Guid key)
         {
             try
             {
-                var con = _dbContext.Contacts.Update(contact.GetInstance());
-                await _dbContext.SaveChangesAsync();
-                return Ok(con);
-            }
-            catch (Exception exception)
-            {
-                _logger.LogWarning(exception,"Update problem");
-                return BadRequest();
-            }
-        }
-        
-        public async Task<IActionResult> Delete([FromBody]Guid id)
-        {
-            try
-            {
-                var contactDeleted =await _dbContext.Contacts.FirstOrDefaultAsync(c => c.Id == id);
-                var con = _dbContext.Contacts.Remove(contactDeleted);
-                await _dbContext.SaveChangesAsync();
-                return Ok(con);
+                var contactDeleted =_contactRepository.Find(key as object);
+                var con=_contactRepository.Remove(contactDeleted.Result);
+                return Ok(con.Result);
             }
             catch (Exception exception)
             {
