@@ -31,8 +31,7 @@ namespace CBZ.ContactApp.Controllers
             _dbContext = context;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
-
-        [HttpGet]
+        
         public ActionResult Get()
         {
             try
@@ -93,7 +92,7 @@ namespace CBZ.ContactApp.Controllers
             }
             catch (Exception exception)
             {
-                _logger.LogWarning(exception,"Create problem");
+                _logger.LogWarning(exception,"Contact creation problem");
                 return BadRequest();
             }
             return Ok(con);

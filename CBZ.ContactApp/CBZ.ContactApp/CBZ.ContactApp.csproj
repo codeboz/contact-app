@@ -22,10 +22,4 @@
       <ProjectReference Include="..\CBZ.ContactApp.Data\CBZ.ContactApp.Data.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Compile Remove="Controllers\InfoTypesController.cs" />
-      <Compile Remove="Controllers\ReportRequestsController.cs" />
-      <Compile Remove="Controllers\ReportStatesController.cs" />
-    </ItemGroup>
-
 </Project>
