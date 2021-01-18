@@ -64,7 +64,7 @@ namespace CBZ.ContactApp.Controllers
             {
                 var rs =_reportStateRepository.Add(reportStates);
                 if (rs.Exception != null) throw rs.Exception;
-                return rs.Result == null ? (ActionResult<ReportRequest>)BadRequest() : Ok(rr.Result);
+                return rs.Result == null ? (ActionResult<ReportState>)BadRequest() : Ok(rs.Result);
             }
             catch (Exception exception)
             {
