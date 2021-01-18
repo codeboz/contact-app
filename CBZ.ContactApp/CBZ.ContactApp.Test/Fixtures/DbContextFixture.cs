@@ -4,7 +4,7 @@ using CBZ.ContactApp.Data;
 using CBZ.ContactApp.Data.Configuration;
 using Microsoft.EntityFrameworkCore;
 
-namespace CBZ.ContactApp.Test
+namespace CBZ.ContactApp.Test.Fixtures
 {
     public class DbContextFixture: IDisposable
     {
@@ -45,17 +45,23 @@ namespace CBZ.ContactApp.Test
             context.SaveChanges();
         }
 
+        public void PruneAll()
+        {
+            FreshCreate();
+            context.Contacts.RemoveRange(context.Contacts.AsQueryable());
+            context.Infos.RemoveRange(context.Infos.AsQueryable());
+            context.InfoTypes.RemoveRange(context.InfoTypes.AsQueryable());
+            context.ReportRequests.RemoveRange(context.ReportRequests.AsQueryable());
+            context.ReportStates.RemoveRange(context.ReportStates.AsQueryable());
+            context.SaveChangesAsync();
+        }
+
         public void Dispose()
         {
             if (context == null)
             {
                 return;
             }
-            context.Contacts.RemoveRange(context.Contacts.AsQueryable());
-            context.Infos.RemoveRange(context.Infos.AsQueryable());
-            context.InfoTypes.RemoveRange(context.InfoTypes.AsQueryable());
-            context.ReportRequests.RemoveRange(context.ReportRequests.AsQueryable());
-            context.ReportStates.RemoveRange(context.ReportStates.AsQueryable());
             context.Database.EnsureDeleted();
             context.SaveChangesAsync();
             context.Dispose();

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using CBZ.ContactApp.Data;
 using CBZ.ContactApp.Data.Model;
 using CBZ.ContactApp.Data.Repository;
@@ -29,51 +30,45 @@ namespace CBZ.ContactApp.Controllers
             _reportRequestRepository = repository;
         }
 
-        public ActionResult Get()
+        public ActionResult<IQueryable<ReportRequest>> Get()
         {
             try
             {
                 var reportRequests=_reportRequestRepository.Get();
-                if (reportRequests == null)
-                {
-                    return NoContent();
-                }
-                return Ok(reportRequests);
+                return !reportRequests.Any()
+                    ? (ActionResult<IQueryable<ReportRequest>>)NoContent()
+                    : Ok(reportRequests);
             }
             catch (Exception ex)
             {
                 _logger.LogError(exception:ex,message:"Get ReportRequests Error");
-                return NotFound();
             }
+            return NotFound();
+
         }
         
-        public IActionResult Get(Guid key)
+        public ActionResult<ReportRequest> Get(Guid key)
         {
             try
             {
                 var rr = _reportRequestRepository.Find(key as object);
-                if (rr == null)
-                {
-                    return NoContent();
-                }
-                return Ok(rr.Result);
+                if (rr.Exception!=null) throw rr.Exception;
+                return rr.Result == null ? (ActionResult<ReportRequest>)NoContent() : Ok(rr.Result);
             }
             catch (Exception ex)
             {
                 _logger.LogError(exception:ex,message:"Get ReportRequests by Keys Error");
-                return NotFound();
             }
+            return NotFound();
         }
-        public ActionResult Post([FromBody] ReportRequest reportRequest)
+        
+        public ActionResult<ReportRequest> Post([FromBody] ReportRequest reportRequest)
         {
             try
             {
                 var rr = _reportRequestRepository.Add(reportRequest);
-                if (rr.Exception != null)
-                {
-                    throw rr.Exception;
-                }
-                Ok(rr.Result);
+                if (rr.Exception != null) throw rr.Exception;
+                return rr.Result == null ? (ActionResult<ReportRequest>)BadRequest() : Ok(rr.Result);
             }
             catch (Exception exception)
             {
@@ -82,39 +77,30 @@ namespace CBZ.ContactApp.Controllers
             return BadRequest();
         }
         
-        public ActionResult Put([FromBody]ReportRequest reportRequests)
+        public ActionResult<ReportRequest> Put([FromBody]ReportRequest reportRequests)
         {
             try
             {
                 var rr = _reportRequestRepository.Update(reportRequests);
-                if (rr.Exception != null)
-                {
-                    throw rr.Exception;
-                }
-                Ok(rr.Result);
+                if (rr.Exception != null) throw rr.Exception;
+                return rr.Result == null ? (ActionResult<ReportRequest>)BadRequest() : Ok(rr.Result);
             }
             catch (Exception exception)
             {
                 _logger.LogWarning(exception,"Update problem");
             }
-            return NotFound();
+            return BadRequest();
         }
 
-        public ActionResult Delete([FromBody] Guid key)
+        public ActionResult<ReportRequest> Delete([FromBody] Guid key)
         {
             try
             {
-                var reportRequestsDeleted = _reportRequestRepository.Find(key as object);
-                if (reportRequestsDeleted.Exception != null)
-                {
-                    throw reportRequestsDeleted.Exception;
-                }
-                var rr = _reportRequestRepository.Remove(reportRequestsDeleted.Result);
-                if (rr.Exception != null)
-                {
-                    throw rr.Exception;
-                }
-                return Ok(rr.Result);
+                var rrd = _reportRequestRepository.Find(key as object);
+                if (rrd.Exception != null) throw rrd.Exception;
+                var rr = _reportRequestRepository.Remove(rrd.Result);
+                if (rr.Exception != null) throw rr.Exception;
+                return rr.Result == null ? (ActionResult<ReportRequest>)BadRequest() : Ok(rr.Result);
             }
             catch (Exception exception)
             {

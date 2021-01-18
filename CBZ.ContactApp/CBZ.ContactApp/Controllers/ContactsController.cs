@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
@@ -28,99 +29,97 @@ namespace CBZ.ContactApp.Controllers
             _contactRepository = contactRepository;
         }
         
-        public ActionResult Get()
+        public ActionResult<IQueryable<Contact>> Get()
         {
             try
             {
-                var contacts=_contactRepository.Get();
-                if (contacts == null)
-                {
-                    return NoContent();
-                }
-                return Ok(contacts);
+                var c=_contactRepository.Get();
+                return !c.Any() ? (ActionResult<IQueryable<Contact>>)NoContent() : Ok(c);
             }
             catch (Exception ex)
             {
                 _logger.LogError(exception:ex,message:"Get Contacts Error");
-                return NotFound();
             }
+            return NotFound();
         }
         
-        public ActionResult Get(Guid key)
+        public ActionResult<Contact> Get(Guid key)
         {
             try
             {
-                var contact = _contactRepository.Find(key as object);
-                if (contact == null)
-                {
-                    return NoContent();
-                }
-                return Ok(contact.Result);
+                var c = _contactRepository.Find(key as object);
+                if (c.Exception!=null) throw c.Exception;
+                return c.Result==null ?  (ActionResult<Contact>)NoContent() : Ok(c.Result);
             }
             catch (Exception ex)
             {
                 _logger.LogError(exception:ex,message:"Get Contacts Error");
-                return NotFound();
             }
+            return NoContent();
         }
         
         [HttpGet]
-        public ActionResult ByNameSurname(string name,string surname)
+        public ActionResult<Contact> ByNameSurname(string name,string surname)
         {
             try
             {
-                var contacts = _contactRepository.Where(i=>i.Name==name && i.Surname==surname);
-                return Ok(contacts);
+                var contacts = _contactRepository.Where(i=>i.Name==name && i.Surname==surname).FirstOrDefault();
+                return contacts==null ? (ActionResult<Contact>)NoContent():Ok(contacts);
             }
             catch (Exception e)
             {
                 _logger.LogError(e,"Contact.ByNameSurname");
-                return NoContent();
             }
+            return NoContent();
         }
 
-        public ActionResult Post([FromBody]Contact contact)
+        public ActionResult<Contact> Post([FromBody]Contact contact)
         {
             try
             {
-                var con=_contactRepository.Add(contact);
-                return Ok(con.Result);
+                var c=_contactRepository.Add(contact);
+                if (c.Exception != null) throw c.Exception;
+                return c.Result == null ? (ActionResult<Contact>) BadRequest() : Ok(c.Result);
             }
             catch (Exception exception)
             {
                 _logger.LogWarning(exception,"Contact creation problem");
-                return BadRequest();
             }
-          
+
+            return BadRequest();
         }
         
-        public ActionResult Put([FromBody]Contact contact)
+        public ActionResult<Contact> Put([FromBody]Contact contact)
         {
             try
             {
-                var con = _contactRepository.Update(contact);
-                return Ok(con.Result);
+                var c = _contactRepository.Update(contact);
+                if (c.Exception != null) throw c.Exception;
+                return c.Result == null ? BadRequest() : Ok(c.Result);
             }
             catch (Exception exception)
             {
                 _logger.LogWarning(exception,"Update problem");
-                return BadRequest();
             }
+
+            return BadRequest();
         }
         
-        public ActionResult Delete([FromBody]Guid key)
+        public ActionResult<Contact> Delete([FromBody]Guid key)
         {
             try
             {
-                var contactDeleted =_contactRepository.Find(key as object);
-                var con=_contactRepository.Remove(contactDeleted.Result);
-                return Ok(con.Result);
+                var cd =_contactRepository.Find(key as object);
+                if (cd.Exception != null) throw cd.Exception;
+                var c = _contactRepository.Remove(cd.Result);
+                if (c.Exception != null) throw c.Exception;
+                return c.Result == null ? (ActionResult<Contact>) BadRequest() : Ok(c.Result);
             }
             catch (Exception exception)
             {
                 _logger.LogWarning(exception,"Update problem");
-                return BadRequest();
             }
+            return NotFound();
         }
    
     }

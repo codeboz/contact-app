@@ -1,5 +1,4 @@
-﻿using System;
-using CBZ.ContactApp.Data.Configuration;
+﻿using CBZ.ContactApp.Data.Configuration;
 using CBZ.ContactApp.Data.Model;
 using Microsoft.EntityFrameworkCore;
 
