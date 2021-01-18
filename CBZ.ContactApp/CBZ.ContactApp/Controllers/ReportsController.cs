@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using CBZ.ContactApp.Data;
 using CBZ.ContactApp.Data.Model;
 using CBZ.ContactApp.Data.Repository;
 using Microsoft.AspNetCore.Http;
@@ -18,13 +17,11 @@ namespace CBZ.ContactApp.Controllers
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public class ReportsController:ODataController
     {
-        private readonly ContactDbContext _dbContext;
         private readonly ILogger<ReportsController> _logger;
         private readonly IRepository<Report> _reportRepository;
 
-        public ReportsController(ContactDbContext context, ILogger<ReportsController> logger, IRepository<Report> reportRepository)
+        public ReportsController(ILogger<ReportsController> logger, IRepository<Report> reportRepository)
         {
-            _dbContext = context;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _reportRepository = reportRepository;
         }
@@ -73,13 +70,17 @@ namespace CBZ.ContactApp.Controllers
             return BadRequest();
         }
         
-        public ActionResult<Report> Put([FromBody] Report reports)
+        public ActionResult<Report> Put(int key,[FromBody] Report reports)
         {
             try
             {
-                var rs = _reportRepository.Update(reports);
-                if (rs.Exception != null) throw rs.Exception;
-                return rs.Result == null ? (ActionResult<Report>)BadRequest() : Ok(rs.Result);
+                var rdb = _reportRepository.Find(key as object).Result;
+                if (rdb.Id == reports.Id)
+                {
+                    var rs = _reportRepository.Update(reports);
+                    if (rs.Exception != null) throw rs.Exception;
+                    return rs.Result == null ? (ActionResult<Report>)BadRequest() : Ok(rs.Result);
+                }
             }
             catch (Exception exception)
             {
@@ -88,7 +89,7 @@ namespace CBZ.ContactApp.Controllers
             return BadRequest();
         }
         
-        public ActionResult<Report> Delete([FromBody] int key)
+        public ActionResult<Report> Delete(int key)
         {
             try
             {

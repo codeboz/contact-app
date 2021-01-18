@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using CBZ.ContactApp.Data;
 using CBZ.ContactApp.Data.Model;
 using CBZ.ContactApp.Data.Repository;
 using Microsoft.AspNetCore.Http;
@@ -18,13 +17,11 @@ namespace CBZ.ContactApp.Controllers
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public class ReportStatesController:ODataController
     {
-        private readonly ContactDbContext _dbContext;
         private readonly ILogger<ReportStatesController> _logger;
         private readonly IRepository<ReportState> _reportStateRepository;
 
-        public ReportStatesController(ContactDbContext context, ILogger<ReportStatesController> logger, IRepository<ReportState> reportStateRepository)
+        public ReportStatesController(ILogger<ReportStatesController> logger, IRepository<ReportState> reportStateRepository)
         {
-            _dbContext = context;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _reportStateRepository = reportStateRepository;
         }
@@ -73,13 +70,17 @@ namespace CBZ.ContactApp.Controllers
             return BadRequest();
         }
         
-        public ActionResult<ReportState> Put([FromBody] ReportState reportRequests)
+        public ActionResult<ReportState> Put(int key,[FromBody] ReportState reportRequests)
         {
             try
             {
-                var rs = _reportStateRepository.Update(reportRequests);
-                if (rs.Exception != null) throw rs.Exception;
-                return rs.Result == null ? (ActionResult<ReportState>)BadRequest() : Ok(rs.Result);
+                var rdb = _reportStateRepository.Find(key as object).Result;
+                if (rdb.Id == reportRequests.Id)
+                {
+                    var rs = _reportStateRepository.Update(reportRequests);
+                    if (rs.Exception != null) throw rs.Exception;
+                    return rs.Result == null ? (ActionResult<ReportState>)BadRequest() : Ok(rs.Result);
+                }
             }
             catch (Exception exception)
             {
@@ -88,7 +89,7 @@ namespace CBZ.ContactApp.Controllers
             return BadRequest();
         }
         
-        public ActionResult<ReportState> Delete([FromBody] int key)
+        public ActionResult<ReportState> Delete(int key)
         {
             try
             {

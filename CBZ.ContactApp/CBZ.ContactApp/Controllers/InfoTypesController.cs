@@ -3,7 +3,6 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
-using CBZ.ContactApp.Data;
 using CBZ.ContactApp.Data.Model;
 using CBZ.ContactApp.Data.Repository;
 using Microsoft.AspNetCore.Http;
@@ -18,13 +17,11 @@ namespace CBZ.ContactApp.Controllers
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public class InfoTypesController:ODataController
     {
-        private readonly ContactDbContext _dbContext;
         private readonly ILogger<InfoTypesController> _logger;
         private readonly IRepository<InfoType> _infoTypeRepository;
 
-        public InfoTypesController(ContactDbContext context, ILogger<InfoTypesController> logger, IRepository<InfoType> repository)
+        public InfoTypesController(ILogger<InfoTypesController> logger, IRepository<InfoType> repository)
         {
-            _dbContext = context;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _infoTypeRepository = repository;
         }
@@ -73,13 +70,17 @@ namespace CBZ.ContactApp.Controllers
             return BadRequest();
         }
         
-        public ActionResult<InfoType> Put([FromBody]InfoType infoTypes)
+        public ActionResult<InfoType> Put(int key,[FromBody]InfoType infoTypes)
         {
             try
             {
-                var it = _infoTypeRepository.Update(infoTypes);
-                if (it.Exception!=null) throw it.Exception;
-                return it.Result == null ? (ActionResult<InfoType>)BadRequest() : Ok(it.Result);
+                var idb = _infoTypeRepository.Find(key as object).Result;
+                if(idb.Id==infoTypes.Id)
+                {
+                    var it = _infoTypeRepository.Update(infoTypes);
+                    if (it.Exception!=null) throw it.Exception;
+                    return it.Result == null ? (ActionResult<InfoType>)BadRequest() : Ok(it.Result);
+                }
             }
             catch (Exception exception)
             {
@@ -88,7 +89,7 @@ namespace CBZ.ContactApp.Controllers
             return BadRequest();
         }
         
-        public ActionResult<InfoType> Delete([FromBody] int key)
+        public ActionResult<InfoType> Delete(int key)
         {
             try
             {

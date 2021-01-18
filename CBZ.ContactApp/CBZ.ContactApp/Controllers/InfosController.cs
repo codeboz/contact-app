@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using CBZ.ContactApp.Data;
 using CBZ.ContactApp.Data.Model;
 using CBZ.ContactApp.Data.Repository;
 using Microsoft.AspNetCore.Http;
@@ -18,13 +17,11 @@ namespace CBZ.ContactApp.Controllers
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public class InfosController:ODataController
     {
-        private readonly ContactDbContext _dbContext;
         private readonly ILogger<InfosController> _logger;
         private readonly IRepository<Info> _infoRepository;
 
-        public InfosController(ContactDbContext context, ILogger<InfosController> logger, IRepository<Info> repository)
+        public InfosController(ILogger<InfosController> logger, IRepository<Info> repository)
         {
-            _dbContext = context;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _infoRepository = repository;
         }
@@ -72,13 +69,17 @@ namespace CBZ.ContactApp.Controllers
             return BadRequest();
         }
         
-        public ActionResult<Info> Put([FromBody]Info info)
+        public ActionResult<Info> Put(Guid keyContactId,int keyInfoTypeId,[FromBody]Info info)
         {
             try
             {
-                var i = _infoRepository.Update(info);
-                if (i.Exception != null) throw i.Exception;
-                return i.Result == null ? (ActionResult<Info>) BadRequest() : Ok(i.Result);
+                var idb = _infoRepository.Find(keyContactId as object,keyInfoTypeId as object).Result;
+                if (idb.ContactId == idb.ContactId && idb.InfoTypeId == idb.InfoTypeId )
+                {
+                    var i = _infoRepository.Update(info);
+                    if (i.Exception != null) throw i.Exception;
+                    return i.Result == null ? (ActionResult<Info>)BadRequest() : Ok(i.Result);
+                }
             }
             catch (Exception exception)
             {
@@ -87,7 +88,7 @@ namespace CBZ.ContactApp.Controllers
             return BadRequest();
         }
 
-        public ActionResult<Info> Delete([FromBody] Guid contactId,[FromBody]int infoTypeId)
+        public ActionResult<Info> Delete(Guid contactId,int infoTypeId)
         {
             try
             {

@@ -29,7 +29,7 @@ namespace CBZ.ContactApp.Test.Controllers
         {
             _fixture.PopulatePartial();
             var repository = new InfoRepository(_fixture.context);
-            var controller = new InfosController(_fixture.context, _logger, repository);
+            var controller = new InfosController(_logger, repository);
             ActionResult<IQueryable<Info>> result = controller.Get();
             result.Result.Should().BeOfType<OkObjectResult>();
         }
@@ -39,7 +39,7 @@ namespace CBZ.ContactApp.Test.Controllers
         {
             _fixture.PruneAll();
             var repository = new InfoRepository(_fixture.context);
-            var controller = new InfosController(_fixture.context, _logger, repository);
+            var controller = new InfosController(_logger, repository);
             ActionResult<IQueryable<Info>> result = controller.Get();
             result.Result.Should().BeOfType<NoContentResult>();
         }
@@ -49,7 +49,7 @@ namespace CBZ.ContactApp.Test.Controllers
         {
             _fixture.PopulatePartial();
             var repository = new InfoRepository(_fixture.context);
-            var controller = new InfosController(_fixture.context, _logger, repository);
+            var controller = new InfosController(_logger, repository);
             var e=InfoEntityTypeConfiguration.InfoSeed.First();
             ActionResult<Info> result = controller.Get(e.ContactId,e.InfoTypeId);
             result.Result.Should().BeOfType<OkObjectResult>();
@@ -60,7 +60,7 @@ namespace CBZ.ContactApp.Test.Controllers
         {
             _fixture.PruneAll();
             var repository = new InfoRepository(_fixture.context);
-            var controller = new InfosController(_fixture.context, _logger, repository);
+            var controller = new InfosController(_logger, repository);
             var e=InfoEntityTypeConfiguration.InfoSeed.First();
             ActionResult<Info> result = controller.Get(e.ContactId,e.InfoTypeId);
             result.Result.Should().BeOfType<NoContentResult>();
@@ -71,7 +71,7 @@ namespace CBZ.ContactApp.Test.Controllers
         {
             _fixture.PopulatePartial();
             var repository = new InfoRepository(_fixture.context);
-            var controller = new InfosController(_fixture.context, _logger, repository);
+            var controller = new InfosController(_logger, repository);
             ActionResult<Info> result = controller.Post(InfoEntityTypeConfiguration.InfoSeed.ElementAt(2));
             result.Result.Should().BeOfType<OkObjectResult>();
         }
@@ -81,7 +81,7 @@ namespace CBZ.ContactApp.Test.Controllers
         {
             _fixture.PopulateAll();
             var repository = new InfoRepository(_fixture.context);
-            var controller = new InfosController(_fixture.context, _logger, repository);
+            var controller = new InfosController(_logger, repository);
             ActionResult<Info> result = controller.Post(InfoEntityTypeConfiguration.InfoSeed.ElementAt(1));
             result.Result.Should().BeOfType<BadRequestResult>();
         }
@@ -91,11 +91,11 @@ namespace CBZ.ContactApp.Test.Controllers
         {
             _fixture.PopulateAll();
             var repository = new InfoRepository(_fixture.context);
-            var controller = new InfosController(_fixture.context, _logger, repository);
+            var controller = new InfosController(_logger, repository);
             var entity = InfoEntityTypeConfiguration.InfoSeed.ElementAt(1);
             var e = repository.Find(entity.ContactId as object,entity.InfoTypeId as object).Result;
             e.Data = "Gg";
-            ActionResult<Info> result = controller.Put(e);
+            ActionResult<Info> result = controller.Put(e.ContactId,e.InfoTypeId,e);
             result.Result.Should().BeOfType<OkObjectResult>();
         }
         
@@ -104,8 +104,9 @@ namespace CBZ.ContactApp.Test.Controllers
         {
             _fixture.PruneAll();
             var repository = new InfoRepository(_fixture.context);
-            var controller = new InfosController(_fixture.context, _logger, repository);
-            ActionResult<Info> result = controller.Put(InfoEntityTypeConfiguration.InfoSeed.ElementAt(2));
+            var controller = new InfosController(_logger, repository);
+            var e = InfoEntityTypeConfiguration.InfoSeed.ElementAt(2);
+            ActionResult<Info> result = controller.Put(e.ContactId,e.InfoTypeId,e);
             result.Result.Should().BeOfType<BadRequestResult>();
         }
         
@@ -114,7 +115,7 @@ namespace CBZ.ContactApp.Test.Controllers
         {
             _fixture.PopulatePartial();
             var repository = new InfoRepository(_fixture.context);
-            var controller = new InfosController(_fixture.context, _logger, repository);
+            var controller = new InfosController(_logger, repository);
             var entity = InfoEntityTypeConfiguration.InfoSeed.ElementAt(1);
             var e = repository.Find(entity.ContactId as object,entity.InfoTypeId as object).Result;
             ActionResult<Info> result = controller.Delete(e.ContactId,e.InfoTypeId);
@@ -126,7 +127,7 @@ namespace CBZ.ContactApp.Test.Controllers
         {
             _fixture.PruneAll();
             var repository = new InfoRepository(_fixture.context);
-            var controller = new InfosController(_fixture.context, _logger, repository);
+            var controller = new InfosController(_logger, repository);
             var entity = InfoEntityTypeConfiguration.InfoSeed.ElementAt(1);
             ActionResult<Info> result = controller.Delete(entity.ContactId,entity.InfoTypeId);
             result.Result.Should().BeOfType<NotFoundResult>();

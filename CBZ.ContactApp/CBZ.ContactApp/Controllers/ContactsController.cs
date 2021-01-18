@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
-using CBZ.ContactApp.Data;
 using CBZ.ContactApp.Data.Model;
 using CBZ.ContactApp.Data.Repository;
 using Microsoft.AspNetCore.Http;
@@ -18,13 +18,11 @@ namespace CBZ.ContactApp.Controllers
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public class ContactsController:ODataController
     {
-        private readonly ContactDbContext _dbContext;
         private readonly ILogger<ContactsController> _logger;
         private readonly IRepository<Contact> _contactRepository;
 
-        public ContactsController(ContactDbContext context, ILogger<ContactsController> logger,IRepository<Contact> contactRepository)
+        public ContactsController(ILogger<ContactsController> logger,IRepository<Contact> contactRepository)
         {
-            _dbContext = context;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _contactRepository = contactRepository;
         }
@@ -89,13 +87,17 @@ namespace CBZ.ContactApp.Controllers
             return BadRequest();
         }
         
-        public ActionResult<Contact> Put([FromBody]Contact contact)
+        public ActionResult<Contact> Put(Guid key,[FromBody]Contact contact)
         {
             try
             {
-                var c = _contactRepository.Update(contact);
-                if (c.Exception != null) throw c.Exception;
-                return c.Result == null ? BadRequest() : Ok(c.Result);
+                var cdb = _contactRepository.Find(key as object).Result;
+                if (cdb.Id == contact.Id)
+                {
+                    var c = _contactRepository.Update(contact);
+                    if (c.Exception != null) throw c.Exception;
+                    return c.Result == null ? BadRequest() : Ok(c.Result);
+                }
             }
             catch (Exception exception)
             {
@@ -105,7 +107,7 @@ namespace CBZ.ContactApp.Controllers
             return BadRequest();
         }
         
-        public ActionResult<Contact> Delete([FromBody]Guid key)
+        public ActionResult<Contact> Delete(Guid key)
         {
             try
             {

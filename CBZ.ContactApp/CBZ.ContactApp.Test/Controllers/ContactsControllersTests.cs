@@ -30,7 +30,7 @@ namespace CBZ.ContactApp.Test.Controllers
         {
             _fixture.PopulatePartial();
             var repository = new ContactRepository(_fixture.context);
-            var controller = new ContactsController(_fixture.context, _logger, repository);
+            var controller = new ContactsController(_logger, repository);
             ActionResult<IQueryable<Contact>> result = controller.Get();
             result.Result.Should().BeOfType<OkObjectResult>();
         }
@@ -40,7 +40,7 @@ namespace CBZ.ContactApp.Test.Controllers
         {
             _fixture.PruneAll();
             var repository = new ContactRepository(_fixture.context);
-            var controller = new ContactsController(_fixture.context, _logger, repository);
+            var controller = new ContactsController(_logger, repository);
             ActionResult<IQueryable<Contact>> result = controller.Get();
             result.Result.Should().BeOfType<NoContentResult>();
         }
@@ -50,7 +50,7 @@ namespace CBZ.ContactApp.Test.Controllers
         {
             _fixture.PopulatePartial();
             var repository = new ContactRepository(_fixture.context);
-            var controller = new ContactsController(_fixture.context, _logger, repository);
+            var controller = new ContactsController(_logger, repository);
             ActionResult<Contact> result = controller.Get(ContactEntityTypeConfiguration.ContactSeed.First().Id);
             result.Result.Should().BeOfType<OkObjectResult>();
         }
@@ -60,7 +60,7 @@ namespace CBZ.ContactApp.Test.Controllers
         {
             _fixture.PruneAll();
             var repository = new ContactRepository(_fixture.context);
-            var controller = new ContactsController(_fixture.context, _logger, repository);
+            var controller = new ContactsController(_logger, repository);
             ActionResult<Contact> result = controller.Get(Guid.NewGuid());
             result.Result.Should().BeOfType<NoContentResult>();
         }
@@ -70,7 +70,7 @@ namespace CBZ.ContactApp.Test.Controllers
         {
             _fixture.PopulatePartial();
             var repository = new ContactRepository(_fixture.context);
-            var controller = new ContactsController(_fixture.context, _logger, repository);
+            var controller = new ContactsController(_logger, repository);
             var name = ContactEntityTypeConfiguration.ContactSeed.First().Name;
             var surname = ContactEntityTypeConfiguration.ContactSeed.First().Surname;
             ActionResult<Contact> result = controller.ByNameSurname(name, surname);
@@ -82,7 +82,7 @@ namespace CBZ.ContactApp.Test.Controllers
         {
             _fixture.PruneAll();
             var repository = new ContactRepository(_fixture.context);
-            var controller = new ContactsController(_fixture.context, _logger, repository);
+            var controller = new ContactsController(_logger, repository);
             var name = ContactEntityTypeConfiguration.ContactSeed.First().Name;
             var surname = ContactEntityTypeConfiguration.ContactSeed.First().Surname;
             ActionResult<Contact> result = controller.ByNameSurname(name, surname);
@@ -94,7 +94,7 @@ namespace CBZ.ContactApp.Test.Controllers
         {
             _fixture.PopulatePartial();
             var repository = new ContactRepository(_fixture.context);
-            var controller = new ContactsController(_fixture.context, _logger, repository);
+            var controller = new ContactsController(_logger, repository);
             ActionResult<Contact> result = controller.Post(ContactEntityTypeConfiguration.ContactSeed.ElementAt(1));
             result.Result.Should().BeOfType<OkObjectResult>();
         }
@@ -104,7 +104,7 @@ namespace CBZ.ContactApp.Test.Controllers
         {
             _fixture.PopulateAll();
             var repository = new ContactRepository(_fixture.context);
-            var controller = new ContactsController(_fixture.context, _logger, repository);
+            var controller = new ContactsController(_logger, repository);
             ActionResult<Contact> result = controller.Post(ContactEntityTypeConfiguration.ContactSeed.ElementAt(1));
             result.Result.Should().BeOfType<BadRequestResult>();
         }
@@ -114,11 +114,11 @@ namespace CBZ.ContactApp.Test.Controllers
         {
             _fixture.PopulateAll();
             var repository = new ContactRepository(_fixture.context);
-            var controller = new ContactsController(_fixture.context, _logger, repository);
+            var controller = new ContactsController(_logger, repository);
             var id = ContactEntityTypeConfiguration.ContactSeed.ElementAt(2).Id;
             var e = repository.Find(id as object).Result;
             e.Name = "Gg";
-            ActionResult<Contact> result = controller.Put(e);
+            ActionResult<Contact> result = controller.Put(e.Id,e);
             result.Result.Should().BeOfType<OkObjectResult>();
         }
         
@@ -127,8 +127,9 @@ namespace CBZ.ContactApp.Test.Controllers
         {
             _fixture.PruneAll();
             var repository = new ContactRepository(_fixture.context);
-            var controller = new ContactsController(_fixture.context, _logger, repository);
-            ActionResult<Contact> result = controller.Put(ContactEntityTypeConfiguration.ContactSeed.ElementAt(2));
+            var controller = new ContactsController(_logger, repository);
+            var e = ContactEntityTypeConfiguration.ContactSeed.ElementAt(2);
+            ActionResult<Contact> result = controller.Put(e.Id,e);
             result.Result.Should().BeOfType<BadRequestResult>();
         }
         
@@ -137,7 +138,7 @@ namespace CBZ.ContactApp.Test.Controllers
         {
             _fixture.PopulatePartial();
             var repository = new ContactRepository(_fixture.context);
-            var controller = new ContactsController(_fixture.context, _logger, repository);
+            var controller = new ContactsController(_logger, repository);
             var e = ContactEntityTypeConfiguration.ContactSeed.ElementAt(0);
             repository.Find(e.Id as object);
             ActionResult<Contact> result = controller.Delete(e.Id);
@@ -149,8 +150,9 @@ namespace CBZ.ContactApp.Test.Controllers
         {
             _fixture.PruneAll();
             var repository = new ContactRepository(_fixture.context);
-            var controller = new ContactsController(_fixture.context, _logger, repository);
-            ActionResult<Contact> result = controller.Delete(ContactEntityTypeConfiguration.ContactSeed.ElementAt(2).Id);
+            var controller = new ContactsController(_logger, repository);
+            var e = ContactEntityTypeConfiguration.ContactSeed.ElementAt(2);
+            ActionResult<Contact> result = controller.Delete(e.Id);
             result.Result.Should().BeOfType<NotFoundResult>();
         }
     }

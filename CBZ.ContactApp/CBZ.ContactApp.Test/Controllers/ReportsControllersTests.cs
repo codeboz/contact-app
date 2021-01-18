@@ -29,7 +29,7 @@ namespace CBZ.ContactApp.Test.Controllers
         {
             _fixture.PopulatePartial();
             var repository = new ReportRepository(_fixture.context);
-            var controller = new ReportsController(_fixture.context, _logger, repository);
+            var controller = new ReportsController(_logger, repository);
             ActionResult<IQueryable<Report>> result = controller.Get();
             result.Result.Should().BeOfType<OkObjectResult>();
         }
@@ -39,7 +39,7 @@ namespace CBZ.ContactApp.Test.Controllers
         {
             _fixture.PruneAll();
             var repository = new ReportRepository(_fixture.context);
-            var controller = new ReportsController(_fixture.context, _logger, repository);
+            var controller = new ReportsController(_logger, repository);
             ActionResult<IQueryable<Report>> result = controller.Get();
             result.Result.Should().BeOfType<NoContentResult>();
         }
@@ -49,7 +49,7 @@ namespace CBZ.ContactApp.Test.Controllers
         {
             _fixture.PopulatePartial();
             var repository = new ReportRepository(_fixture.context);
-            var controller = new ReportsController(_fixture.context, _logger, repository);
+            var controller = new ReportsController(_logger, repository);
             var e=ReportEntityTypeConfiguration.ReportSeed.First().Id;
             ActionResult<Report> result = controller.Get(e);
             result.Result.Should().BeOfType<OkObjectResult>();
@@ -60,7 +60,7 @@ namespace CBZ.ContactApp.Test.Controllers
         {
             _fixture.PruneAll();
             var repository = new ReportRepository(_fixture.context);
-            var controller = new ReportsController(_fixture.context, _logger, repository);
+            var controller = new ReportsController(_logger, repository);
             var e=ReportEntityTypeConfiguration.ReportSeed.First().Id;
             ActionResult<Report> result = controller.Get(e);
             result.Result.Should().BeOfType<NoContentResult>();
@@ -71,7 +71,7 @@ namespace CBZ.ContactApp.Test.Controllers
         {
             _fixture.PruneAll();
             var repository = new ReportRepository(_fixture.context);
-            var controller = new ReportsController(_fixture.context, _logger, repository);
+            var controller = new ReportsController(_logger, repository);
             var e = ReportEntityTypeConfiguration.ReportSeed.ElementAt(0);
             ActionResult<Report> result = controller.Post(e);
             result.Result.Should().BeOfType<OkObjectResult>();
@@ -82,7 +82,7 @@ namespace CBZ.ContactApp.Test.Controllers
         {
             _fixture.PopulateAll();
             var repository = new ReportRepository(_fixture.context);
-            var controller = new ReportsController(_fixture.context, _logger, repository);
+            var controller = new ReportsController(_logger, repository);
             ActionResult<Report> result = controller.Post(ReportEntityTypeConfiguration.ReportSeed.ElementAt(1));
             result.Result.Should().BeOfType<BadRequestResult>();
         }
@@ -92,11 +92,11 @@ namespace CBZ.ContactApp.Test.Controllers
         {
             _fixture.PopulateAll();
             var repository = new ReportRepository(_fixture.context);
-            var controller = new ReportsController(_fixture.context, _logger, repository);
+            var controller = new ReportsController(_logger, repository);
             var eid = ReportEntityTypeConfiguration.ReportSeed.ElementAt(1).Id;
             var e = repository.Find(eid as object).Result;
             e.ContactCount = 4;
-            ActionResult<Report> result = controller.Put(e);
+            ActionResult<Report> result = controller.Put(e.Id,e);
             result.Result.Should().BeOfType<OkObjectResult>();
         }
         
@@ -105,8 +105,9 @@ namespace CBZ.ContactApp.Test.Controllers
         {
             _fixture.PruneAll();
             var repository = new ReportRepository(_fixture.context);
-            var controller = new ReportsController(_fixture.context, _logger, repository);
-            ActionResult<Report> result = controller.Put(ReportEntityTypeConfiguration.ReportSeed.ElementAt(1));
+            var controller = new ReportsController(_logger, repository);
+            var e = ReportEntityTypeConfiguration.ReportSeed.ElementAt(1);
+            ActionResult<Report> result = controller.Put(e.Id,e);
             result.Result.Should().BeOfType<BadRequestResult>();
         }
         
@@ -115,7 +116,7 @@ namespace CBZ.ContactApp.Test.Controllers
         {
             _fixture.PopulatePartial();
             var repository = new ReportRepository(_fixture.context);
-            var controller = new ReportsController(_fixture.context, _logger, repository);
+            var controller = new ReportsController(_logger, repository);
             var eid = ReportEntityTypeConfiguration.ReportSeed.ElementAt(0).Id;
             ActionResult<Report> result = controller.Delete(eid);
             result.Result.Should().BeOfType<OkObjectResult>();
@@ -126,12 +127,10 @@ namespace CBZ.ContactApp.Test.Controllers
         {
             _fixture.PruneAll();
             var repository = new ReportRepository(_fixture.context);
-            var controller = new ReportsController(_fixture.context, _logger, repository);
+            var controller = new ReportsController(_logger, repository);
             var eid = ReportEntityTypeConfiguration.ReportSeed.ElementAt(1).Id;
             ActionResult<Report> result = controller.Delete(eid);
             result.Result.Should().BeOfType<NotFoundResult>();
         }
     }
-
-
 }
