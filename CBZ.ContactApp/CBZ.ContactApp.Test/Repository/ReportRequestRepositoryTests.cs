@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using CBZ.ContactApp.Data.Configuration;
 using CBZ.ContactApp.Data.Repository;
+using CBZ.ContactApp.Test.Fixtures;
 using Xunit;
 
 namespace CBZ.ContactApp.Test.Repository

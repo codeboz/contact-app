@@ -4,7 +4,7 @@ using CBZ.ContactApp.Data;
 using CBZ.ContactApp.Data.Configuration;
 using Microsoft.EntityFrameworkCore;
 
-namespace CBZ.ContactApp.Test
+namespace CBZ.ContactApp.Test.Fixtures
 {
     public class DbContextFixture: IDisposable
     {

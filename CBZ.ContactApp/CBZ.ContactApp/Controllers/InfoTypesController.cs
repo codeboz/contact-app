@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Threading.Tasks;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
-using Microsoft.EntityFrameworkCore;
 using CBZ.ContactApp.Data;
 using CBZ.ContactApp.Data.Model;
 using CBZ.ContactApp.Data.Repository;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.OData.Formatter.Value;
 using Microsoft.Extensions.Logging;
 
 namespace CBZ.ContactApp.Controllers
@@ -31,48 +29,42 @@ namespace CBZ.ContactApp.Controllers
             _infoTypeRepository = repository;
         }
 
-        public ActionResult Get()
+        public ActionResult<IQueryable<InfoType>> Get()
         {
             try
             {
                 var infoTypes=_infoTypeRepository.Get();
-                if (infoTypes == null)
-                {
-                    return NoContent();
-                }
-                return Ok(infoTypes);
+                return infoTypes == null ? (ActionResult<IQueryable<InfoType>>)NoContent() : Ok(infoTypes);
             }
             catch (Exception ex)
             {
                 _logger.LogError(exception:ex,message:"Get InfoTypes Error");
-                return NotFound();
             }
+            return NotFound();
         }
         
-        public ActionResult Get(int key)
+        public ActionResult<InfoType> Get(int key)
         {
             try
             {
                 var it = _infoTypeRepository.Find(key as object);
-                if (it == null)
-                {
-                    return NoContent();
-                }
-                return Ok(it);
+                if (it.Exception!=null) throw it.Exception;
+                return it.Result == null ? (ActionResult<InfoType>)NoContent() : Ok(it.Result);
             }
             catch (Exception ex)
             {
                 _logger.LogError(exception:ex,message:"Get InfoTypes by Keys Error");
-                return NotFound();
             }
+            return NotFound();
         }
         
-        public ActionResult Post([FromBody]InfoType infoTypes)
+        public ActionResult<InfoType> Post([FromBody]InfoType infoTypes)
         {
             try
             {
                 var it = _infoTypeRepository.Add(infoTypes);
-                Ok(it.Result);
+                if (it.Exception!=null) throw it.Exception;
+                return it.Result == null ? (ActionResult<InfoType>)NoContent() : Ok(it.Result);
             }
             catch (Exception exception)
             {
@@ -81,13 +73,13 @@ namespace CBZ.ContactApp.Controllers
             return BadRequest();
         }
         
-        public async Task<IActionResult> Put([FromBody]InfoType infoTypes)
+        public ActionResult<InfoType> Put([FromBody]InfoType infoTypes)
         {
             try
             {
-                var it = _dbContext.InfoTypes.Update(infoTypes);
-                await _dbContext.SaveChangesAsync();
-                return Ok(it);
+                var it = _infoTypeRepository.Update(infoTypes);
+                if (it.Exception!=null) throw it.Exception;
+                return it.Result == null ? (ActionResult<InfoType>)BadRequest() : Ok(it.Result);
             }
             catch (Exception exception)
             {
@@ -96,29 +88,15 @@ namespace CBZ.ContactApp.Controllers
             return NotFound();
         }
         
-        public async Task<IActionResult> Patch(Guid id,[FromBody] Delta<InfoType> infoTypes)
+        public ActionResult<InfoType> Delete([FromBody] int key)
         {
             try
             {
-                var it = _dbContext.InfoTypes.Update(infoTypes.GetInstance());
-                await _dbContext.SaveChangesAsync();
-                return Ok(it);
-            }
-            catch (Exception exception)
-            {
-                _logger.LogWarning(exception,"Update problem");
-            }
-            return NotFound();
-        }
-        
-        public async Task<IActionResult> Delete([FromBody] int key)
-        {
-            try
-            {
-                var infoTypesDeleted =await _dbContext.InfoTypes.FirstOrDefaultAsync(infoType=>infoType.Id==key);
-                var it = _dbContext.InfoTypes.Remove(infoTypesDeleted);
-                await _dbContext.SaveChangesAsync();
-                return Ok(it);
+                var itd =_infoTypeRepository.Find(key as object);
+                if (itd.Exception != null) throw itd.Exception;
+                var it = _infoTypeRepository.Remove(itd.Result);
+                if (it.Exception != null) throw it.Exception;
+                return it.Result == null ? (ActionResult<InfoType>)BadRequest() : Ok(it.Result);
             }
             catch (Exception exception)
             {

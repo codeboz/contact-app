@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using CBZ.ContactApp.Data;
 using CBZ.ContactApp.Data.Model;
 using CBZ.ContactApp.Data.Repository;
@@ -28,47 +29,41 @@ namespace CBZ.ContactApp.Controllers
             _infoRepository = repository;
         }
 
-        public ActionResult Get()
+        public ActionResult<IQueryable<Info>> Get()
         {
             try
             {
                 var infos=_infoRepository.Get();
-                if (infos == null)
-                {
-                    return NoContent();
-                }
-                return Ok(infos);
+                return infos == null ? (ActionResult<IQueryable<Info>>)NoContent() : Ok(infos);
             }
             catch (Exception ex)
             {
                 _logger.LogError(exception:ex,message:"Get Infos Error");
-                return NotFound();
             }
+            return NotFound();
         }
         
-        public ActionResult Get(Guid keyContactId,int keyInfoTypeId)
+        public ActionResult<Info> Get(Guid keyContactId,int keyInfoTypeId)
         {
             try
             {
-                var i = _infoRepository.Find(keyContactId, keyInfoTypeId as object); 
-                if (i == null)
-                {
-                    return NoContent();
-                }
-                return Ok(i.Result);
+                var i = _infoRepository.Find(keyContactId as object, keyInfoTypeId as object);
+                if (i.Exception!=null) throw i.Exception;
+                return i.Result == null ? (ActionResult<Info>)NoContent() : Ok(i.Result);
             }
             catch (Exception ex)
             {
                 _logger.LogError(exception:ex,message:"Get Infos by Keys Error");
-                return NotFound();
             }
+            return NotFound();
         }
-        public ActionResult Post([FromBody]Info info)
+        public ActionResult<Info> Post([FromBody]Info info)
         {
             try
             {
                 var i = _infoRepository.Add(info);
-                Ok(i.Result);
+                if (i.Exception!=null) throw i.Exception;
+                return i.Result == null ? (ActionResult<Info>)NoContent() : Ok(i.Result);
             }
             catch (Exception exception)
             {
@@ -77,12 +72,13 @@ namespace CBZ.ContactApp.Controllers
             return BadRequest();
         }
         
-        public ActionResult Put([FromBody]Info info)
+        public ActionResult<Info> Put([FromBody]Info info)
         {
             try
             {
                 var i = _infoRepository.Update(info);
-                return Ok(i.Result);
+                if (i.Exception != null) throw i.Exception;
+                return i.Result == null ? (ActionResult<Info>) BadRequest() : Ok(i.Result);
             }
             catch (Exception exception)
             {
@@ -91,13 +87,15 @@ namespace CBZ.ContactApp.Controllers
             return NotFound();
         }
 
-        public ActionResult Delete([FromBody] Guid contactId,[FromBody]int infoTypeId)
+        public ActionResult<Info> Delete([FromBody] Guid contactId,[FromBody]int infoTypeId)
         {
             try
             {
-                var infoDeleted = _infoRepository.Find(contactId, infoTypeId as object);
-                var i = _infoRepository.Remove(infoDeleted.Result);
-                return Ok(i.Result);
+                var id = _infoRepository.Find(contactId as object, infoTypeId as object);
+                if (id.Exception != null) throw id.Exception;
+                var i = _infoRepository.Remove(id.Result);
+                if (i.Exception != null) throw i.Exception;
+                return i.Result == null ? (ActionResult<Info>) BadRequest() : Ok(i.Result);
             }
             catch (Exception exception)
             {

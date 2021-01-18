@@ -64,10 +64,11 @@ namespace CBZ.ContactApp
                 app.UseDeveloperExceptionPage();
               
             }
-            app.UseODataBatching();
             
             app.UseSerilogRequestLogging();
-            
+
+            app.UseODataBatching();
+
             app.UseRouting();
 
             app.UseAuthorization();

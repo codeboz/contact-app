@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using CBZ.ContactApp.Data;
 using CBZ.ContactApp.Data.Model;
 using CBZ.ContactApp.Data.Repository;
@@ -28,43 +29,36 @@ namespace CBZ.ContactApp.Controllers
             _reportStateRepository = reportStateRepository;
         }
 
-        public ActionResult Get()
+        public ActionResult<IQueryable<ReportState>> Get()
         {
             try
             {
                 var reportRequests=_reportStateRepository.Get();
-                if (reportRequests == null)
-                {
-                    return NoContent();
-                }
-                return Ok(reportRequests);
+                return reportRequests == null ? (ActionResult<IQueryable<ReportState>>)NoContent() : Ok(reportRequests);
             }
             catch (Exception ex)
             {
                 _logger.LogError(exception:ex,message:"Get ReportStates Error");
-                return NotFound();
             }
+            return NotFound();
         }
         
-        public ActionResult Get(int key)
+        public ActionResult<ReportState> Get(int key)
         {
             try
             {
                 var rs = _reportStateRepository.Find(key as object);
                 if (rs.Exception != null) throw rs.Exception;
-                if (rs.Result == null)
-                {
-                    return NoContent();
-                }
-                return Ok(rs.Result);
+                return rs.Result == null ? (ActionResult)NoContent() : Ok(rs.Result);
             }
             catch (Exception ex)
             {
                 _logger.LogError(exception:ex,message:"Get ReportStates by Keys Error");
-                return NotFound();
             }
+            return NotFound();
         }
-        public ActionResult Post([FromBody] ReportState reportStates)
+        
+        public ActionResult<ReportState> Post([FromBody] ReportState reportStates)
         {
             try
             {
@@ -79,7 +73,7 @@ namespace CBZ.ContactApp.Controllers
             return BadRequest();
         }
         
-        public ActionResult Put([FromBody] ReportState reportRequests)
+        public ActionResult<ReportState> Put([FromBody] ReportState reportRequests)
         {
             try
             {
@@ -94,14 +88,15 @@ namespace CBZ.ContactApp.Controllers
             return NotFound();
         }
         
-        public ActionResult Delete([FromBody] int key)
+        public ActionResult<ReportState> Delete([FromBody] int key)
         {
             try
             {
-                var reportRequestsDeleted = _reportStateRepository.Find(key as object);
-                if (reportRequestsDeleted.Exception != null) throw reportRequestsDeleted.Exception;
-                var rs = _reportStateRepository.Remove(reportRequestsDeleted.Result);
-                return Ok(rs.Result);
+                var rrd = _reportStateRepository.Find(key as object);
+                if (rrd.Exception != null) throw rrd.Exception;
+                var rr = _reportStateRepository.Remove(rrd.Result);
+                if (rr.Exception != null) throw rr.Exception;
+                return rr.Result == null ? (ActionResult<ReportState>)BadRequest() : Ok(rr.Result);
             }
             catch (Exception exception)
             {
