@@ -35,7 +35,7 @@ namespace CBZ.ContactApp.Controllers
             try
             {
                 var reportRequests=_reportRequestRepository.Get();
-                return reportRequests == null
+                return !reportRequests.Any()
                     ? (ActionResult<IQueryable<ReportRequest>>)NoContent()
                     : Ok(reportRequests);
             }
@@ -89,7 +89,7 @@ namespace CBZ.ContactApp.Controllers
             {
                 _logger.LogWarning(exception,"Update problem");
             }
-            return NotFound();
+            return BadRequest();
         }
 
         public ActionResult<ReportRequest> Delete([FromBody] Guid key)
