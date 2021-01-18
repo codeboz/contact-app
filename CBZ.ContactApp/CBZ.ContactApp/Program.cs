@@ -4,6 +4,7 @@ using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using RabbitMQ.Client;
 using Serilog;
 
 namespace CBZ.ContactApp
@@ -30,6 +31,7 @@ namespace CBZ.ContactApp
             try
             {
                 AppDomain.CurrentDomain.ProcessExit += (_, _) => Log.CloseAndFlush();
+                RabbitMqExchangeDeclare();
                 var iWebHost = CreateHostBuilder(args).Build();
                 Log.Information("Getting the motors running");
                 iWebHost.Run();
@@ -50,5 +52,18 @@ namespace CBZ.ContactApp
                     builder.UseStartup<Startup>();
                     builder.UseConfiguration(Configuration);
                 }).UseSerilog();
+
+        private static void RabbitMqExchangeDeclare()
+        {
+            var factory = new ConnectionFactory();
+            factory.Uri = new Uri("amqp://admin:secret@localhost:5672");
+            var connection = factory.CreateConnection();
+            var channel = connection.CreateModel();
+
+            channel.ExchangeDeclare("contactAppExchange", ExchangeType.Fanout, true);
+
+            channel.Close();
+            connection.Close();
+        }
     }
 }
