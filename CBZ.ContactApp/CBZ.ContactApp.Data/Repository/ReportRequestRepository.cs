@@ -49,9 +49,9 @@ namespace CBZ.ContactApp.Data.Repository
 
         public async Task<ReportRequest> Remove(ReportRequest t)
         {
-            var reportRequest= _dbSet.Remove(t);
+            var reportRequest= _dbSet.Remove(t).Entity;
             await _dbContext.SaveChangesAsync();
-            return reportRequest.Entity;
+            return reportRequest;
         }
     }
 }

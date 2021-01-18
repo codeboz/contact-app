@@ -25,12 +25,16 @@ namespace CBZ.ContactApp.Test.Repository
         
         
         [Fact]
-        public void Add_A_InfoType_When_Not_Populated_Should_Be_One()
+        public void Add_A_InfoType_When_Not_Populated_Should_Be_Four()
         {
+            _fixture.PopulatePartial();
             var repository= new InfoTypeRepository(_fixture.context);
-            repository.Add(InfoTypeEntityTypeConfiguration.InfoTypeSeed.ElementAt(2));
+            var entity = InfoTypeEntityTypeConfiguration.InfoTypeSeed.ElementAt(1);
+            entity.Id = 4;
+            entity.Name = "TestInfoType";
+            repository.Add(entity);
             var count = repository.Get().Count();
-            Assert.Equal(1,count);
+            Assert.Equal(4,count);
         }
         
         [Fact]
