@@ -34,7 +34,7 @@ namespace CBZ.ContactApp.Controllers
             try
             {
                 var infoTypes=_infoTypeRepository.Get();
-                return infoTypes == null ? (ActionResult<IQueryable<InfoType>>)NoContent() : Ok(infoTypes);
+                return !infoTypes.Any() ? (ActionResult<IQueryable<InfoType>>)NoContent() : Ok(infoTypes);
             }
             catch (Exception ex)
             {
@@ -85,7 +85,7 @@ namespace CBZ.ContactApp.Controllers
             {
                 _logger.LogWarning(exception,"Update problem");
             }
-            return NotFound();
+            return BadRequest();
         }
         
         public ActionResult<InfoType> Delete([FromBody] int key)
