@@ -117,11 +117,12 @@ namespace CBZ.ContactApp
             //EntitySet
             var reportStatesEntitySet= builder.EntitySet<ReportState>("ReportStates");
             reportStatesEntitySet.EntityType.HasKey(e => e.Id);
-
-
-            // builder.EntitySet<InfoType>("InfoTypes");
-            // builder.EntitySet<ReportRequest>("ReportRequests");
-            // builder.EntitySet<ReportState>("ReportState");
+            
+            //Report
+            //EntitySet
+            var reportsEntitySet= builder.EntitySet<Report>("Reports");
+            reportStatesEntitySet.EntityType.HasKey(e => e.Id);
+            
             return builder.GetEdmModel();
         }
     }
