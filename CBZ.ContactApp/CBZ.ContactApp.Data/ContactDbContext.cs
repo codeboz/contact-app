@@ -11,6 +11,8 @@ namespace CBZ.ContactApp.Data
         public DbSet<InfoType> InfoTypes { get; set; }
         public DbSet<ReportRequest> ReportRequests { get; set; }
         public DbSet<ReportState> ReportStates { get; set; }
+        public DbSet<Report> Reports { get; set; }
+
         
         public ContactDbContext(DbContextOptions<ContactDbContext> options)
             : base(options)
@@ -24,6 +26,7 @@ namespace CBZ.ContactApp.Data
             modelBuilder.ApplyConfiguration(new InfoEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ReportStateEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ReportRequestEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ReportEntityTypeConfiguration());
             base.OnModelCreating(modelBuilder);
         }
 
