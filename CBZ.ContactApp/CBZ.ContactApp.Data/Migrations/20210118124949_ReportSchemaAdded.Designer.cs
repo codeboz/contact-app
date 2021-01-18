@@ -3,15 +3,17 @@ using System;
 using CBZ.ContactApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace CBZ.ContactApp.Data.Migrations
 {
     [DbContext(typeof(ContactDbContext))]
-    partial class ContactDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210118124949_ReportSchemaAdded")]
+    partial class ReportSchemaAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
