@@ -34,7 +34,7 @@ namespace CBZ.ContactApp.Controllers
             try
             {
                 var c=_contactRepository.Get();
-                return c == null ? (ActionResult<IQueryable<Contact>>)NoContent() : Ok(c);
+                return !c.Any() ? (ActionResult<IQueryable<Contact>>)NoContent() : Ok(c);
             }
             catch (Exception ex)
             {
@@ -49,7 +49,7 @@ namespace CBZ.ContactApp.Controllers
             {
                 var c = _contactRepository.Find(key as object);
                 if (c.Exception!=null) throw c.Exception;
-                return c.Result == null ? (ActionResult<Contact>)NoContent() : Ok(c.Result);
+                return c.Result==null ?  (ActionResult<Contact>)NoContent() : Ok(c.Result);
             }
             catch (Exception ex)
             {
@@ -63,7 +63,7 @@ namespace CBZ.ContactApp.Controllers
         {
             try
             {
-                var contacts = _contactRepository.Where(i=>i.Name==name && i.Surname==surname);
+                var contacts = _contactRepository.Where(i=>i.Name==name && i.Surname==surname).FirstOrDefault();
                 return contacts==null ? (ActionResult<Contact>)NoContent():Ok(contacts);
             }
             catch (Exception e)
@@ -85,7 +85,8 @@ namespace CBZ.ContactApp.Controllers
             {
                 _logger.LogWarning(exception,"Contact creation problem");
             }
-            return NotFound();
+
+            return BadRequest();
         }
         
         public ActionResult<Contact> Put([FromBody]Contact contact)
@@ -94,14 +95,14 @@ namespace CBZ.ContactApp.Controllers
             {
                 var c = _contactRepository.Update(contact);
                 if (c.Exception != null) throw c.Exception;
-                return c.Result == null ? (ActionResult<Contact>) BadRequest() : Ok(c.Result);
+                return c.Result == null ? BadRequest() : Ok(c.Result);
             }
             catch (Exception exception)
             {
                 _logger.LogWarning(exception,"Update problem");
             }
 
-            return NotFound();
+            return BadRequest();
         }
         
         public ActionResult<Contact> Delete([FromBody]Guid key)
