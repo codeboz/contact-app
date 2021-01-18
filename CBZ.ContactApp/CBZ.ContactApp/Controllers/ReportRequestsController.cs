@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using CBZ.ContactApp.Data;
 using CBZ.ContactApp.Data.Model;
 using CBZ.ContactApp.Data.Repository;
@@ -8,6 +10,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using RabbitMQ.Client;
+using RabbitMQ.Client.Exceptions;
+using RabbitMQ.Client.Framing;
 
 namespace CBZ.ContactApp.Controllers
 {
@@ -68,7 +74,23 @@ namespace CBZ.ContactApp.Controllers
             {
                 var rr = _reportRequestRepository.Add(reportRequest);
                 if (rr.Exception != null) throw rr.Exception;
-                return rr.Result == null ? (ActionResult<ReportRequest>)BadRequest() : Ok(rr.Result);
+                if (rr.Result == null)
+                {
+                    return BadRequest();
+                }
+                else
+                {
+                    var entity = rr.Result;
+                    string jsonData = JsonConvert.SerializeObject(entity);                    var message = $"";
+                    var headers = new Dictionary<string, object>
+                    {
+                        {"subject", "report"},
+                        {"action", "generate"}
+                    };
+
+                    SendMessage(headers, message);
+                    return Ok(rr.Result);
+                }
             }
             catch (Exception exception)
             {
@@ -107,6 +129,21 @@ namespace CBZ.ContactApp.Controllers
                 _logger.LogWarning(exception,"Update problem");
             }
             return NotFound();
+        }
+        
+        private void SendMessage(IDictionary<string, object> headers, string message)
+        {
+            var factory = new ConnectionFactory();
+            factory.Uri = new Uri("amqp://admin:secret@localhost:5672");
+            var connection = factory.CreateConnection();
+            var channel = connection.CreateModel();
+
+            var bytes = Encoding.UTF8.GetBytes(message);
+            var props = channel.CreateBasicProperties();
+            props.Headers = headers;
+            channel.BasicPublish("contactAppExchange", "", props, bytes);
+            channel.Close();
+            connection.Close();
         }
    
     }
