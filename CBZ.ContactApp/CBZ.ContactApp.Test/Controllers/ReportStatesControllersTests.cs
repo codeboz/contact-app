@@ -12,21 +12,13 @@ using Xunit;
 
 namespace CBZ.ContactApp.Test.Controllers
 {
-    public class ReportStatesControllersTests:IClassFixture<DbContextFixture>
+    public class ReportStatesControllersTests
     {
-        private readonly DbContextFixture _fixture;
-        private readonly ILogger<ReportStatesController> _logger;
-
-        public ReportStatesControllersTests(DbContextFixture fixture)
-        {
-            _fixture = fixture;
-            var loggerMock = new Mock<ILogger<ReportStatesController>>();
-            _logger = loggerMock.Object;
-        }
-
         [Fact]
         public void Controller_Get_Should_Be_OkResult()
         {
+            var _fixture = new DbContextFixture();
+            var _logger = new Mock<ILogger<ReportStatesController>>().Object;
             _fixture.PopulatePartial();
             var repository = new ReportStateRepository(_fixture.context);
             var controller = new ReportStatesController(_logger, repository);
@@ -37,7 +29,8 @@ namespace CBZ.ContactApp.Test.Controllers
         [Fact]
         public void Controller_Get_Should_Be_NoContentResult()
         {
-            _fixture.PruneAll();
+            var _fixture = new DbContextFixture();
+            var _logger = new Mock<ILogger<ReportStatesController>>().Object;
             var repository = new ReportStateRepository(_fixture.context);
             var controller = new ReportStatesController(_logger, repository);
             ActionResult<IQueryable<ReportState>> result = controller.Get();
@@ -47,6 +40,8 @@ namespace CBZ.ContactApp.Test.Controllers
         [Fact]
         public void Controller_Get_ById_Should_Be_OkResult()
         {
+            var _fixture = new DbContextFixture();
+            var _logger = new Mock<ILogger<ReportStatesController>>().Object;
             _fixture.PopulatePartial();
             var repository = new ReportStateRepository(_fixture.context);
             var controller = new ReportStatesController(_logger, repository);
@@ -58,7 +53,8 @@ namespace CBZ.ContactApp.Test.Controllers
         [Fact]
         public void Controller_Get_ById_Should_Be_NoContentResult()
         {
-            _fixture.PruneAll();
+            var _fixture = new DbContextFixture();
+            var _logger = new Mock<ILogger<ReportStatesController>>().Object;
             var repository = new ReportStateRepository(_fixture.context);
             var controller = new ReportStatesController(_logger, repository);
             var e=ReportStateEntityTypeConfiguration.ReportStateSeed.First().Id;
@@ -69,7 +65,8 @@ namespace CBZ.ContactApp.Test.Controllers
         [Fact]
         public void Controller_Post_Should_Be_OkResult()
         {
-            _fixture.PruneAll();
+            var _fixture = new DbContextFixture();
+            var _logger = new Mock<ILogger<ReportStatesController>>().Object;
             var repository = new ReportStateRepository(_fixture.context);
             var controller = new ReportStatesController(_logger, repository);
             var e = ReportStateEntityTypeConfiguration.ReportStateSeed.ElementAt(0);
@@ -80,6 +77,8 @@ namespace CBZ.ContactApp.Test.Controllers
         [Fact]
         public void Controller_Post_Should_Be_BadRequest()
         {
+            var _fixture = new DbContextFixture();
+            var _logger = new Mock<ILogger<ReportStatesController>>().Object;
             _fixture.PopulateAll();
             var repository = new ReportStateRepository(_fixture.context);
             var controller = new ReportStatesController(_logger, repository);
@@ -90,6 +89,8 @@ namespace CBZ.ContactApp.Test.Controllers
         [Fact]
         public void Controller_Put_Should_Be_OkResult()
         {
+            var _fixture = new DbContextFixture();
+            var _logger = new Mock<ILogger<ReportStatesController>>().Object;
             _fixture.PopulateAll();
             var repository = new ReportStateRepository(_fixture.context);
             var controller = new ReportStatesController(_logger, repository);
@@ -103,7 +104,8 @@ namespace CBZ.ContactApp.Test.Controllers
         [Fact]
         public void Controller_Put_Should_Be_BadRequest()
         {
-            _fixture.PruneAll();
+            var _fixture = new DbContextFixture();
+            var _logger = new Mock<ILogger<ReportStatesController>>().Object;
             var repository = new ReportStateRepository(_fixture.context);
             var controller = new ReportStatesController(_logger, repository);
             var e = ReportStateEntityTypeConfiguration.ReportStateSeed.ElementAt(1);
@@ -114,6 +116,8 @@ namespace CBZ.ContactApp.Test.Controllers
         [Fact]
         public void Controller_Delete_Should_Be_OkResult()
         {
+            var _fixture = new DbContextFixture();
+            var _logger = new Mock<ILogger<ReportStatesController>>().Object;
             _fixture.PopulatePartial();
             var repository = new ReportStateRepository(_fixture.context);
             var controller = new ReportStatesController(_logger, repository);
@@ -125,7 +129,8 @@ namespace CBZ.ContactApp.Test.Controllers
         [Fact]
         public void Controller_Delete_Should_Be_NotFound()
         {
-            _fixture.PruneAll();
+            var _fixture = new DbContextFixture();
+            var _logger = new Mock<ILogger<ReportStatesController>>().Object;
             var repository = new ReportStateRepository(_fixture.context);
             var controller = new ReportStatesController(_logger, repository);
             var eid = ReportStateEntityTypeConfiguration.ReportStateSeed.ElementAt(1).Id;

@@ -6,7 +6,7 @@ using Xunit;
 
 namespace CBZ.ContactApp.Test.Repository
 {
-    public class InfoRepositoryTests:IClassFixture<DbContextFixture>
+    public class InfoRepositoryTests
     {
         private readonly DbContextFixture _fixture;
 

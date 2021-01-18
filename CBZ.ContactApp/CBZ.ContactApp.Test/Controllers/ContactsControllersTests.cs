@@ -13,21 +13,13 @@ using Xunit;
 
 namespace CBZ.ContactApp.Test.Controllers
 {
-    public class ContactsControllersTests:IClassFixture<DbContextFixture>
+    public class ContactsControllersTests
     {
-        private readonly DbContextFixture _fixture;
-        private readonly ILogger<ContactsController> _logger;
-
-        public ContactsControllersTests(DbContextFixture fixture)
-        {
-            _fixture = fixture;
-            var loggerMock = new Mock<ILogger<ContactsController>>();
-            _logger = loggerMock.Object;
-        }
-
         [Fact]
         public void Controller_Get_Should_Be_OkResult()
         {
+            var _fixture = new DbContextFixture();
+            var _logger = new Mock<ILogger<ContactsController>>().Object;
             _fixture.PopulatePartial();
             var repository = new ContactRepository(_fixture.context);
             var controller = new ContactsController(_logger, repository);
@@ -38,7 +30,8 @@ namespace CBZ.ContactApp.Test.Controllers
         [Fact]
         public void Controller_Get_Should_Be_NoContentResult()
         {
-            _fixture.PruneAll();
+            var _fixture = new DbContextFixture();
+            var _logger = new Mock<ILogger<ContactsController>>().Object;
             var repository = new ContactRepository(_fixture.context);
             var controller = new ContactsController(_logger, repository);
             ActionResult<IQueryable<Contact>> result = controller.Get();
@@ -48,6 +41,8 @@ namespace CBZ.ContactApp.Test.Controllers
         [Fact]
         public void Controller_Get_ById_Should_Be_OkResult()
         {
+            var _fixture = new DbContextFixture();
+            var _logger = new Mock<ILogger<ContactsController>>().Object;
             _fixture.PopulatePartial();
             var repository = new ContactRepository(_fixture.context);
             var controller = new ContactsController(_logger, repository);
@@ -58,7 +53,8 @@ namespace CBZ.ContactApp.Test.Controllers
         [Fact]
         public void Controller_Get_ById_Should_Be_NoContentResult()
         {
-            _fixture.PruneAll();
+            var _fixture = new DbContextFixture();
+            var _logger = new Mock<ILogger<ContactsController>>().Object;
             var repository = new ContactRepository(_fixture.context);
             var controller = new ContactsController(_logger, repository);
             ActionResult<Contact> result = controller.Get(Guid.NewGuid());
@@ -68,6 +64,8 @@ namespace CBZ.ContactApp.Test.Controllers
         [Fact]
         public void Controller_Get_ByNameSurname_Should_Be_OkResult()
         {
+            var _fixture = new DbContextFixture();
+            var _logger = new Mock<ILogger<ContactsController>>().Object;
             _fixture.PopulatePartial();
             var repository = new ContactRepository(_fixture.context);
             var controller = new ContactsController(_logger, repository);
@@ -80,7 +78,8 @@ namespace CBZ.ContactApp.Test.Controllers
         [Fact]
         public void Controller_Get_ByNameSurname_Should_Be_NoContentResult()
         {
-            _fixture.PruneAll();
+            var _fixture = new DbContextFixture();
+            var _logger = new Mock<ILogger<ContactsController>>().Object;
             var repository = new ContactRepository(_fixture.context);
             var controller = new ContactsController(_logger, repository);
             var name = ContactEntityTypeConfiguration.ContactSeed.First().Name;
@@ -92,6 +91,8 @@ namespace CBZ.ContactApp.Test.Controllers
         [Fact]
         public void Controller_Post_Should_Be_OkResult()
         {
+            var _fixture = new DbContextFixture();
+            var _logger = new Mock<ILogger<ContactsController>>().Object;
             _fixture.PopulatePartial();
             var repository = new ContactRepository(_fixture.context);
             var controller = new ContactsController(_logger, repository);
@@ -102,6 +103,8 @@ namespace CBZ.ContactApp.Test.Controllers
         [Fact]
         public void Controller_Post_Should_Be_BadRequest()
         {
+            var _fixture = new DbContextFixture();
+            var _logger = new Mock<ILogger<ContactsController>>().Object;
             _fixture.PopulateAll();
             var repository = new ContactRepository(_fixture.context);
             var controller = new ContactsController(_logger, repository);
@@ -112,6 +115,8 @@ namespace CBZ.ContactApp.Test.Controllers
         [Fact]
         public void Controller_Put_Should_Be_OkResult()
         {
+            var _fixture = new DbContextFixture();
+            var _logger = new Mock<ILogger<ContactsController>>().Object;
             _fixture.PopulateAll();
             var repository = new ContactRepository(_fixture.context);
             var controller = new ContactsController(_logger, repository);
@@ -125,7 +130,8 @@ namespace CBZ.ContactApp.Test.Controllers
         [Fact]
         public void Controller_Put_Should_Be_BadRequest()
         {
-            _fixture.PruneAll();
+            var _fixture = new DbContextFixture();
+            var _logger = new Mock<ILogger<ContactsController>>().Object;
             var repository = new ContactRepository(_fixture.context);
             var controller = new ContactsController(_logger, repository);
             var e = ContactEntityTypeConfiguration.ContactSeed.ElementAt(2);
@@ -136,6 +142,8 @@ namespace CBZ.ContactApp.Test.Controllers
         [Fact]
         public void Controller_Delete_Should_Be_OkResult()
         {
+            var _fixture = new DbContextFixture();
+            var _logger = new Mock<ILogger<ContactsController>>().Object;
             _fixture.PopulatePartial();
             var repository = new ContactRepository(_fixture.context);
             var controller = new ContactsController(_logger, repository);
@@ -148,7 +156,8 @@ namespace CBZ.ContactApp.Test.Controllers
         [Fact]
         public void Controller_Delete_Should_Be_NotFound()
         {
-            _fixture.PruneAll();
+            var _fixture = new DbContextFixture();
+            var _logger = new Mock<ILogger<ContactsController>>().Object;
             var repository = new ContactRepository(_fixture.context);
             var controller = new ContactsController(_logger, repository);
             var e = ContactEntityTypeConfiguration.ContactSeed.ElementAt(2);
