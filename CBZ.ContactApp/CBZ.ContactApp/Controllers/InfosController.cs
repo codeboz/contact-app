@@ -34,7 +34,7 @@ namespace CBZ.ContactApp.Controllers
             try
             {
                 var infos=_infoRepository.Get();
-                return infos == null ? (ActionResult<IQueryable<Info>>)NoContent() : Ok(infos);
+                return !infos.Any() ? (ActionResult<IQueryable<Info>>)NoContent() : Ok(infos);
             }
             catch (Exception ex)
             {
@@ -84,7 +84,7 @@ namespace CBZ.ContactApp.Controllers
             {
                 _logger.LogWarning(exception,"Update problem");
             }
-            return NotFound();
+            return BadRequest();
         }
 
         public ActionResult<Info> Delete([FromBody] Guid contactId,[FromBody]int infoTypeId)
