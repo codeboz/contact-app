@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using CBZ.ContactApp.Controllers;
-using CBZ.ContactApp.Data;
 using CBZ.ContactApp.Data.Configuration;
 using CBZ.ContactApp.Data.Model;
 using CBZ.ContactApp.Data.Repository;

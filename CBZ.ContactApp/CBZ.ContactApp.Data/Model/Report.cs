@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace CBZ.ContactApp.Data.Model
+﻿namespace CBZ.ContactApp.Data.Model
 {
     public class Report
     {
