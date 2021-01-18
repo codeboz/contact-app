@@ -19,7 +19,9 @@ namespace CBZ.ContactApp.Data.Configuration
             };
     
         public void Configure(EntityTypeBuilder<Contact> builder)
-        {   //Shadow properties
+        {
+            //Shadow properties
+            builder.Property(contact => contact.Id).ValueGeneratedOnAdd();
             builder.Property<DateTime>("Inserted").ValueGeneratedOnAdd().HasDefaultValueSql("now()");
             builder.Property<DateTime>("Updated").ValueGeneratedOnAddOrUpdate().HasDefaultValueSql("now()");
             builder.Property(c => c.Name).IsRequired();
@@ -28,6 +30,7 @@ namespace CBZ.ContactApp.Data.Configuration
             builder.HasMany(c => c.Infos);
             //Indexes
             builder.HasIndex(c => new { c.Name, c.Surname });
+            builder.HasKey(c => c.Id);
             //InitialData
             builder.HasData(ContactSeed);
         }

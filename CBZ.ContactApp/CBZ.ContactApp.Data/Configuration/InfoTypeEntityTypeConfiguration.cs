@@ -21,10 +21,12 @@ namespace CBZ.ContactApp.Data.Configuration
             builder.Property<DateTime>("Inserted").ValueGeneratedOnAdd().HasDefaultValueSql("now()");
             builder.Property<DateTime>("Updated").ValueGeneratedOnAddOrUpdate().HasDefaultValueSql("now()");
             builder.Property(i => i.Name).IsRequired();
+            builder.Property(i => i.Id).HasIdentityOptions(startValue: 100);
             //Relations
             builder.HasMany(it => it.Infos);
             //Indexes
             builder.HasIndex(it => it.Name).IsUnique();
+            builder.HasKey(it => it.Id);
             //Seed
             builder.HasData(InfoTypeSeed);
 
