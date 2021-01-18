@@ -119,7 +119,6 @@ namespace CBZ.ContactApp.Controllers
             {
                 _logger.LogWarning(exception,"Update problem");
             }
-
             return NotFound();
         }
    
