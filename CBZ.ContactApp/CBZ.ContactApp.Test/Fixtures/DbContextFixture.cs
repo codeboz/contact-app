@@ -31,6 +31,7 @@ namespace CBZ.ContactApp.Test.Fixtures
             context.Infos.AddRangeAsync(InfoEntityTypeConfiguration.InfoSeed.Take(2));
             context.ReportStates.AddRangeAsync(ReportStateEntityTypeConfiguration.ReportStateSeed);
             context.ReportRequests.AddRangeAsync(ReportRequestEntityTypeConfiguration.ReportRequestSeed.Take(1));
+            context.Reports.AddRangeAsync(ReportEntityTypeConfiguration.ReportSeed.Take(1));
             context.SaveChanges();
         }
         
@@ -42,6 +43,7 @@ namespace CBZ.ContactApp.Test.Fixtures
             context.Infos.AddRangeAsync(InfoEntityTypeConfiguration.InfoSeed);
             context.ReportStates.AddRangeAsync(ReportStateEntityTypeConfiguration.ReportStateSeed);
             context.ReportRequests.AddRangeAsync(ReportRequestEntityTypeConfiguration.ReportRequestSeed);
+            context.Reports.AddRangeAsync(ReportEntityTypeConfiguration.ReportSeed);
             context.SaveChanges();
         }
 
@@ -53,6 +55,7 @@ namespace CBZ.ContactApp.Test.Fixtures
             context.InfoTypes.RemoveRange(context.InfoTypes.AsQueryable());
             context.ReportRequests.RemoveRange(context.ReportRequests.AsQueryable());
             context.ReportStates.RemoveRange(context.ReportStates.AsQueryable());
+            context.Reports.RemoveRange(context.Reports.AsQueryable());
             context.SaveChangesAsync();
         }
 
