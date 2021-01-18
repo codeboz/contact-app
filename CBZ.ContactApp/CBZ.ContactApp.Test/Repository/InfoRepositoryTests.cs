@@ -8,18 +8,18 @@ namespace CBZ.ContactApp.Test.Repository
 {
     public class InfoRepositoryTests
     {
-        private readonly DbContextFixture _fixture;
+        private readonly DbContextFixture fixture;
 
         public InfoRepositoryTests()
         {
-            _fixture = new DbContextFixture();
+            fixture = new DbContextFixture();
         }
 
         [Fact]
         public void Info_Count_When_All_Populated_Should_Be_Fifteen()
         {
-            _fixture.PopulateAll();
-            var repository= new InfoRepository(_fixture.context);
+            fixture.PopulateAll();
+            var repository= new InfoRepository(fixture.context);
             var c = repository.Get().Count();
             Assert.Equal(15,c);
         }
@@ -27,8 +27,8 @@ namespace CBZ.ContactApp.Test.Repository
         [Fact]
         public void Info_Count_When_Partial_Populated_Should_Be_Two()
         {
-            _fixture.PopulatePartial();
-            var repository= new InfoRepository(_fixture.context);
+            fixture.PopulatePartial();
+            var repository= new InfoRepository(fixture.context);
             var contactCount = repository.Get().Count();
             Assert.Equal(2,contactCount);
         }
@@ -36,8 +36,8 @@ namespace CBZ.ContactApp.Test.Repository
         [Fact]
         public void Add_A_Info_When_Partial_Populated_Should_Be_Three()
         {
-            _fixture.PopulatePartial();
-            var repository= new InfoRepository(_fixture.context);
+            fixture.PopulatePartial();
+            var repository= new InfoRepository(fixture.context);
             repository.Add(InfoEntityTypeConfiguration.InfoSeed.ElementAt(3));
             var count = repository.Get().Count();
             Assert.Equal(3,count);
@@ -46,8 +46,8 @@ namespace CBZ.ContactApp.Test.Repository
         [Fact]
         public void Remove_A_Info_When_All_Populated_Should_Be_FourTeen()
         {
-            _fixture.PopulateAll();
-            var repository = new InfoRepository(_fixture.context);
+            fixture.PopulateAll();
+            var repository = new InfoRepository(fixture.context);
             var id = InfoEntityTypeConfiguration.InfoSeed.ElementAt(2).ContactId;
             var InfoTypeId = InfoEntityTypeConfiguration.InfoSeed.ElementAt(2).InfoTypeId;
             var entity = repository.Find(id as object,InfoTypeId as object).Result;
@@ -60,8 +60,8 @@ namespace CBZ.ContactApp.Test.Repository
         [Fact]
         public void Find_And_Where_Info_Should_Be_Same()
         {
-            _fixture.PopulateAll();
-            var repository = new InfoRepository(_fixture.context);
+            fixture.PopulateAll();
+            var repository = new InfoRepository(fixture.context);
             var contactId = InfoEntityTypeConfiguration.InfoSeed.ElementAt(2).ContactId;
             var infoTypeId = InfoEntityTypeConfiguration.InfoSeed.ElementAt(2).InfoTypeId;
             var entityFind = repository.Find(contactId as object,infoTypeId as object).Result;
@@ -72,8 +72,8 @@ namespace CBZ.ContactApp.Test.Repository
         [Fact]
         public void Update_the_Data_Of_Info_Should_Not_Be_Same()
         {
-            _fixture.PopulateAll();
-            var repository = new InfoRepository(_fixture.context);
+            fixture.PopulateAll();
+            var repository = new InfoRepository(fixture.context);
             var contactId = InfoEntityTypeConfiguration.InfoSeed.ElementAt(2).ContactId;
             var infoTypeId = InfoEntityTypeConfiguration.InfoSeed.ElementAt(2).InfoTypeId;
             var data = InfoEntityTypeConfiguration.InfoSeed.ElementAt(2).Data;

@@ -8,18 +8,18 @@ namespace CBZ.ContactApp.Test.Repository
 {
     public class ReportRepositoryTests
     {
-        private readonly DbContextFixture _fixture;
+        private readonly DbContextFixture fixture;
 
         public ReportRepositoryTests()
         {
-            _fixture = new DbContextFixture();
+            fixture = new DbContextFixture();
         }
 
         [Fact]
         public void Report_Count_When_All_Populated_Should_Be_Two()
         {
-            _fixture.PopulateAll();
-            var repository= new ReportRepository(_fixture.context);
+            fixture.PopulateAll();
+            var repository= new ReportRepository(fixture.context);
             var c = repository.Get().Count();
             Assert.Equal(2,c);
         }
@@ -27,7 +27,7 @@ namespace CBZ.ContactApp.Test.Repository
         [Fact]
         public void Add_A_Report_When_Not_Populated_Should_Be_One()
         {
-            var repository= new ReportRepository(_fixture.context);
+            var repository= new ReportRepository(fixture.context);
             var entity = ReportEntityTypeConfiguration.ReportSeed.ElementAt(1);
             entity.Id=3;
             repository.Add(entity);
@@ -38,8 +38,8 @@ namespace CBZ.ContactApp.Test.Repository
         [Fact]
         public void Remove_A_Report_When_All_Populated_Should_Be_One()
         {
-            _fixture.PopulateAll();
-            var repository = new ReportRepository(_fixture.context);
+            fixture.PopulateAll();
+            var repository = new ReportRepository(fixture.context);
             var id = ReportEntityTypeConfiguration.ReportSeed.ElementAt(1).Id;
             var entity = repository.Find(id as object).Result;
             repository.Remove(entity);
@@ -51,8 +51,8 @@ namespace CBZ.ContactApp.Test.Repository
          [Fact]
          public void Find_And_Where_Report_Should_Be_Same()
          {
-             _fixture.PopulateAll();
-             var repository = new ReportRepository(_fixture.context);
+             fixture.PopulateAll();
+             var repository = new ReportRepository(fixture.context);
              var id = ReportEntityTypeConfiguration.ReportSeed.ElementAt(0).Id;
              var entityFind = repository.Find(id as object).Result;
              var entityWhere = repository.Where(e=>e.Id==id).First();
@@ -62,8 +62,8 @@ namespace CBZ.ContactApp.Test.Repository
          [Fact]
          public void Update_the_Data_Of_Report_Should_Not_Be_Same()
          {
-             _fixture.PopulateAll();
-             var repository = new ReportRepository(_fixture.context);
+             fixture.PopulateAll();
+             var repository = new ReportRepository(fixture.context);
              var id = ReportEntityTypeConfiguration.ReportSeed.ElementAt(1).Id;
              var data = ReportEntityTypeConfiguration.ReportSeed.ElementAt(1).Location;
              var entity = repository.Find(id as object).Result;

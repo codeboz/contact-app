@@ -124,14 +124,21 @@ namespace CBZ.ContactApp.Controllers
         
         private void SendMessage( string message)
         {
-            var factory = new ConnectionFactory {Uri = new Uri("amqp://admin:secret@localhost:5672")};
-            var connection = factory.CreateConnection();
-            var channel = connection.CreateModel();
-            channel.ExchangeDeclare("contactAppExchange", ExchangeType.Fanout, true);
-            var bytes = Encoding.UTF8.GetBytes(message);
-            channel.BasicPublish("contactAppExchange", "", null, bytes);
-            channel.Close();
-            connection.Close();
+            try
+            {
+                var factory = new ConnectionFactory {Uri = new Uri("amqp://admin:secret@localhost:5672")};
+                var connection = factory.CreateConnection();
+                var channel = connection.CreateModel();
+                channel.ExchangeDeclare("contactAppExchange", ExchangeType.Fanout, true);
+                var bytes = Encoding.UTF8.GetBytes(message);
+                channel.BasicPublish("contactAppExchange", "", null, bytes);
+                channel.Close();
+                connection.Close();
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception.Message);
+            }
         }
    
     }

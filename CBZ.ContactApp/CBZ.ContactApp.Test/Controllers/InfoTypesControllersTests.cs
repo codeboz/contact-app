@@ -17,11 +17,11 @@ namespace CBZ.ContactApp.Test.Controllers
         [Fact]
         public void Controller_Get_Should_Be_OkResult()
         {
-            var _fixture = new DbContextFixture();
-            var _logger = new Mock<ILogger<InfoTypesController>>().Object;
-            _fixture.PopulatePartial();
-            var repository = new InfoTypeRepository(_fixture.context);
-            var controller = new InfoTypesController(_logger, repository);
+            var fixture = new DbContextFixture();
+            var logger = new Mock<ILogger<InfoTypesController>>().Object;
+            fixture.PopulatePartial();
+            var repository = new InfoTypeRepository(fixture.context);
+            var controller = new InfoTypesController(logger, repository);
             ActionResult<IQueryable<InfoType>> result = controller.Get();
             result.Result.Should().BeOfType<OkObjectResult>();
         }
@@ -29,10 +29,10 @@ namespace CBZ.ContactApp.Test.Controllers
         [Fact]
         public void Controller_Get_Should_Be_NoContentResult()
         {
-            var _fixture = new DbContextFixture();
-            var _logger = new Mock<ILogger<InfoTypesController>>().Object;
-            var repository = new InfoTypeRepository(_fixture.context);
-            var controller = new InfoTypesController(_logger, repository);
+            var fixture = new DbContextFixture();
+            var logger = new Mock<ILogger<InfoTypesController>>().Object;
+            var repository = new InfoTypeRepository(fixture.context);
+            var controller = new InfoTypesController(logger, repository);
             ActionResult<IQueryable<InfoType>> result = controller.Get();
             result.Result.Should().BeOfType<NoContentResult>();
         }
@@ -40,11 +40,11 @@ namespace CBZ.ContactApp.Test.Controllers
         [Fact]
         public void Controller_Get_ById_Should_Be_OkResult()
         {
-            var _fixture = new DbContextFixture();
-            var _logger = new Mock<ILogger<InfoTypesController>>().Object;
-            _fixture.PopulatePartial();
-            var repository = new InfoTypeRepository(_fixture.context);
-            var controller = new InfoTypesController(_logger, repository);
+            var fixture = new DbContextFixture();
+            var logger = new Mock<ILogger<InfoTypesController>>().Object;
+            fixture.PopulatePartial();
+            var repository = new InfoTypeRepository(fixture.context);
+            var controller = new InfoTypesController(logger, repository);
             var e=InfoTypeEntityTypeConfiguration.InfoTypeSeed.First().Id;
             ActionResult<InfoType> result = controller.Get(e);
             result.Result.Should().BeOfType<OkObjectResult>();
@@ -53,10 +53,10 @@ namespace CBZ.ContactApp.Test.Controllers
         [Fact]
         public void Controller_Get_ById_Should_Be_NoContentResult()
         {
-            var _fixture = new DbContextFixture();
-            var _logger = new Mock<ILogger<InfoTypesController>>().Object;
-            var repository = new InfoTypeRepository(_fixture.context);
-            var controller = new InfoTypesController(_logger, repository);
+            var fixture = new DbContextFixture();
+            var logger = new Mock<ILogger<InfoTypesController>>().Object;
+            var repository = new InfoTypeRepository(fixture.context);
+            var controller = new InfoTypesController(logger, repository);
             var e=InfoTypeEntityTypeConfiguration.InfoTypeSeed.First().Id;
             ActionResult<InfoType> result = controller.Get(e);
             result.Result.Should().BeOfType<NoContentResult>();
@@ -65,10 +65,10 @@ namespace CBZ.ContactApp.Test.Controllers
         [Fact]
         public void Controller_Post_Should_Be_OkResult()
         {
-            var _fixture = new DbContextFixture();
-            var _logger = new Mock<ILogger<InfoTypesController>>().Object;
-            var repository = new InfoTypeRepository(_fixture.context);
-            var controller = new InfoTypesController(_logger, repository);
+            var fixture = new DbContextFixture();
+            var logger = new Mock<ILogger<InfoTypesController>>().Object;
+            var repository = new InfoTypeRepository(fixture.context);
+            var controller = new InfoTypesController(logger, repository);
             ActionResult<InfoType> result = controller.Post(InfoTypeEntityTypeConfiguration.InfoTypeSeed.ElementAt(0));
             result.Result.Should().BeOfType<OkObjectResult>();
         }
@@ -76,11 +76,11 @@ namespace CBZ.ContactApp.Test.Controllers
         [Fact]
         public void Controller_Post_Should_Be_BadRequest()
         {
-            var _fixture = new DbContextFixture();
-            var _logger = new Mock<ILogger<InfoTypesController>>().Object;
-            _fixture.PopulateAll();
-            var repository = new InfoTypeRepository(_fixture.context);
-            var controller = new InfoTypesController(_logger, repository);
+            var fixture = new DbContextFixture();
+            var logger = new Mock<ILogger<InfoTypesController>>().Object;
+            fixture.PopulateAll();
+            var repository = new InfoTypeRepository(fixture.context);
+            var controller = new InfoTypesController(logger, repository);
             ActionResult<InfoType> result = controller.Post(InfoTypeEntityTypeConfiguration.InfoTypeSeed.ElementAt(1));
             result.Result.Should().BeOfType<BadRequestResult>();
         }
@@ -88,11 +88,11 @@ namespace CBZ.ContactApp.Test.Controllers
         [Fact]
         public void Controller_Put_Should_Be_OkResult()
         {
-            var _fixture = new DbContextFixture();
-            var _logger = new Mock<ILogger<InfoTypesController>>().Object;
-            _fixture.PopulateAll();
-            var repository = new InfoTypeRepository(_fixture.context);
-            var controller = new InfoTypesController(_logger, repository);
+            var fixture = new DbContextFixture();
+            var logger = new Mock<ILogger<InfoTypesController>>().Object;
+            fixture.PopulateAll();
+            var repository = new InfoTypeRepository(fixture.context);
+            var controller = new InfoTypesController(logger, repository);
             var eid = InfoTypeEntityTypeConfiguration.InfoTypeSeed.ElementAt(1).Id;
             var e = repository.Find(eid as object).Result;
             e.Name = "Gg";
@@ -103,10 +103,10 @@ namespace CBZ.ContactApp.Test.Controllers
         [Fact]
         public void Controller_Put_Should_Be_BadRequest()
         {
-            var _fixture = new DbContextFixture();
-            var _logger = new Mock<ILogger<InfoTypesController>>().Object;
-            var repository = new InfoTypeRepository(_fixture.context);
-            var controller = new InfoTypesController(_logger, repository);
+            var fixture = new DbContextFixture();
+            var logger = new Mock<ILogger<InfoTypesController>>().Object;
+            var repository = new InfoTypeRepository(fixture.context);
+            var controller = new InfoTypesController(logger, repository);
             var e = InfoTypeEntityTypeConfiguration.InfoTypeSeed.ElementAt(2);
             ActionResult<InfoType> result = controller.Put(e.Id,e);
             result.Result.Should().BeOfType<BadRequestResult>();
@@ -115,11 +115,11 @@ namespace CBZ.ContactApp.Test.Controllers
         [Fact]
         public void Controller_Delete_Should_Be_OkResult()
         {
-            var _fixture = new DbContextFixture();
-            var _logger = new Mock<ILogger<InfoTypesController>>().Object;
-            _fixture.PopulatePartial();
-            var repository = new InfoTypeRepository(_fixture.context);
-            var controller = new InfoTypesController(_logger, repository);
+            var fixture = new DbContextFixture();
+            var logger = new Mock<ILogger<InfoTypesController>>().Object;
+            fixture.PopulatePartial();
+            var repository = new InfoTypeRepository(fixture.context);
+            var controller = new InfoTypesController(logger, repository);
             var eid = InfoTypeEntityTypeConfiguration.InfoTypeSeed.ElementAt(1).Id;
             ActionResult<InfoType> result = controller.Delete(eid);
             result.Result.Should().BeOfType<OkObjectResult>();
@@ -128,10 +128,10 @@ namespace CBZ.ContactApp.Test.Controllers
         [Fact]
         public void Controller_Delete_Should_Be_NotFound()
         {
-            var _fixture = new DbContextFixture();
-            var _logger = new Mock<ILogger<InfoTypesController>>().Object;
-            var repository = new InfoTypeRepository(_fixture.context);
-            var controller = new InfoTypesController(_logger, repository);
+            var fixture = new DbContextFixture();
+            var logger = new Mock<ILogger<InfoTypesController>>().Object;
+            var repository = new InfoTypeRepository(fixture.context);
+            var controller = new InfoTypesController(logger, repository);
             var eid = InfoTypeEntityTypeConfiguration.InfoTypeSeed.ElementAt(1).Id;
             ActionResult<InfoType> result = controller.Delete(eid);
             result.Result.Should().BeOfType<NotFoundResult>();

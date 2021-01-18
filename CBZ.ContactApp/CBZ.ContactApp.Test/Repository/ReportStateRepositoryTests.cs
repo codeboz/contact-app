@@ -8,18 +8,18 @@ namespace CBZ.ContactApp.Test.Repository
 {
     public class ReportStateRepositoryTests
     {
-        private readonly DbContextFixture _fixture;
+        private readonly DbContextFixture fixture;
 
         public ReportStateRepositoryTests()
         {
-            _fixture = new DbContextFixture();
+            fixture = new DbContextFixture();
         }
 
         [Fact]
         public void ReportState_Count_When_All_Populated_Should_Be_Two()
         {
-            _fixture.PopulateAll();
-            var repository= new ReportStateRepository(_fixture.context);
+            fixture.PopulateAll();
+            var repository= new ReportStateRepository(fixture.context);
             var c = repository.Get().Count();
             Assert.Equal(2,c);
         }
@@ -28,7 +28,7 @@ namespace CBZ.ContactApp.Test.Repository
         public void Add_A_ReportState_When_Not_Populated_Should_Be_Two()
         {
             
-            var repository= new ReportStateRepository(_fixture.context);
+            var repository= new ReportStateRepository(fixture.context);
             var entity = ReportStateEntityTypeConfiguration.ReportStateSeed.ElementAt(1);
             entity.Id=3;
             entity.Name = "Tamamlandı";
@@ -40,8 +40,8 @@ namespace CBZ.ContactApp.Test.Repository
         [Fact]
         public void Remove_A_ReportState_When_All_Populated_Should_Be_One()
         {
-            _fixture.PopulateAll();
-            var repository = new ReportStateRepository(_fixture.context);
+            fixture.PopulateAll();
+            var repository = new ReportStateRepository(fixture.context);
             var id = ReportStateEntityTypeConfiguration.ReportStateSeed.ElementAt(1).Id;
             var entity = repository.Find(id as object).Result;
             repository.Remove(entity);
@@ -53,8 +53,8 @@ namespace CBZ.ContactApp.Test.Repository
          [Fact]
          public void Find_And_Where_ReportState_Should_Be_Same()
          {
-             _fixture.PopulateAll();
-             var repository = new ReportStateRepository(_fixture.context);
+             fixture.PopulateAll();
+             var repository = new ReportStateRepository(fixture.context);
              var id = ReportStateEntityTypeConfiguration.ReportStateSeed.ElementAt(1).Id;
              var entityFind = repository.Find(id as object).Result;
              var entityWhere = repository.Where(e=>e.Id==id).First();
@@ -64,8 +64,8 @@ namespace CBZ.ContactApp.Test.Repository
          [Fact]
          public void Update_the_Data_Of_ReportState_Should_Not_Be_Same()
          {
-             _fixture.PopulateAll();
-             var repository = new ReportStateRepository(_fixture.context);
+             fixture.PopulateAll();
+             var repository = new ReportStateRepository(fixture.context);
              var id = ReportStateEntityTypeConfiguration.ReportStateSeed.ElementAt(1).Id;
              var data = ReportStateEntityTypeConfiguration.ReportStateSeed.ElementAt(1).Name;
              var entity = repository.Find(id as object).Result;

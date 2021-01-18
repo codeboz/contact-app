@@ -8,18 +8,18 @@ namespace CBZ.ContactApp.Test.Repository
 {
     public class ContactRepositoryTests
     {
-        private readonly DbContextFixture _fixture;
+        private readonly DbContextFixture fixture;
 
         public ContactRepositoryTests()
         {
-            _fixture = new DbContextFixture();
+            fixture = new DbContextFixture();
         }
 
         [Fact]
         public void Contact_Count_When_All_Populated_Should_Be_Five()
         {
-            _fixture.PopulateAll();
-            var repository = new ContactRepository(_fixture.context);
+            fixture.PopulateAll();
+            var repository = new ContactRepository(fixture.context);
                 var contactCount = repository.Get().Count();
                 Assert.Equal(5,contactCount);
         }
@@ -27,8 +27,8 @@ namespace CBZ.ContactApp.Test.Repository
         [Fact]
         public void Contact_Count_When_Partial_Populated_Should_Be_One()
         {
-            _fixture.PopulatePartial();
-            var repository = new ContactRepository(_fixture.context);
+            fixture.PopulatePartial();
+            var repository = new ContactRepository(fixture.context);
             var contactCount = repository.Get().Count();
             Assert.Equal(1,contactCount);
         }
@@ -36,8 +36,8 @@ namespace CBZ.ContactApp.Test.Repository
         [Fact]
         public void Add_A_Contact_When_Partial_Populated_Should_Be_Two()
         {
-            _fixture.PopulatePartial();
-            var repository = new ContactRepository(_fixture.context);
+            fixture.PopulatePartial();
+            var repository = new ContactRepository(fixture.context);
             repository.Add(ContactEntityTypeConfiguration.ContactSeed.ElementAt(2));
             var contactCount = repository.Get().Count();
             Assert.Equal(2,contactCount);
@@ -46,8 +46,8 @@ namespace CBZ.ContactApp.Test.Repository
         [Fact]
         public void Remove_A_Contact_When_All_Populated_Should_Be_Four()
         {
-            _fixture.PopulateAll();
-            var repository = new ContactRepository(_fixture.context);
+            fixture.PopulateAll();
+            var repository = new ContactRepository(fixture.context);
             var id = ContactEntityTypeConfiguration.ContactSeed.ElementAt(2).Id;
             var entity = repository.Find(id as object).Result;
             repository.Remove(entity);
@@ -59,8 +59,8 @@ namespace CBZ.ContactApp.Test.Repository
         [Fact]
         public void Find_And_Where_Contact_Should_Be_Same()
         {
-            _fixture.PopulateAll();
-            var repository = new ContactRepository(_fixture.context);
+            fixture.PopulateAll();
+            var repository = new ContactRepository(fixture.context);
             var entityInsertedId = ContactEntityTypeConfiguration.ContactSeed.ElementAt(2).Id;
             var entityFind = repository.Find(entityInsertedId as object).Result;
             var entityWhere = repository.Where(e=>e.Id==entityInsertedId).First();
@@ -70,8 +70,8 @@ namespace CBZ.ContactApp.Test.Repository
         [Fact]
         public void Update_the_Name_Of_Contact_Should_Not_Be_Same()
         {
-            _fixture.PopulateAll();
-            var repository = new ContactRepository(_fixture.context);
+            fixture.PopulateAll();
+            var repository = new ContactRepository(fixture.context);
             var entityInsertedId = ContactEntityTypeConfiguration.ContactSeed.ElementAt(3).Id;
             var entityInsertedName = ContactEntityTypeConfiguration.ContactSeed.ElementAt(3).Name;
             var entity = repository.Find(entityInsertedId as object).Result;

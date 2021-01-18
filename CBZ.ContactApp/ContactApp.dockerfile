@@ -18,8 +18,8 @@ COPY CBZ.ContactApp.ReportGenerator/. ./CBZ.ContactApp.ReportGenerator/
 COPY CBZ.ContactApp.Test/. ./CBZ.ContactApp.Test/
 #
 # make unit tests
-WORKDIR /app/CBZ.ContactApp.Test
 RUN dotnet test
+#
 # build contactapp
 WORKDIR /app/CBZ.ContactApp
 RUN dotnet publish -c Release -o out
