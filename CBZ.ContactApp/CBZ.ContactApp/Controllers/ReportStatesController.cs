@@ -79,13 +79,13 @@ namespace CBZ.ContactApp.Controllers
             {
                 var rs = _reportStateRepository.Update(reportRequests);
                 if (rs.Exception != null) throw rs.Exception;
-                return Ok(rs.Result);
+                return rs.Result == null ? (ActionResult<ReportState>)BadRequest() : Ok(rs.Result);
             }
             catch (Exception exception)
             {
                 _logger.LogWarning(exception,"Update problem");
             }
-            return NotFound();
+            return BadRequest();
         }
         
         public ActionResult<ReportState> Delete([FromBody] int key)
