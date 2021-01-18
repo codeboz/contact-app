@@ -22,8 +22,8 @@ namespace CBZ.ContactApp.Data.Configuration
         {
             //Shadow properties
             builder.Property(contact => contact.Id).ValueGeneratedOnAdd();
-            builder.Property<DateTime>("Inserted").ValueGeneratedOnAdd().HasDefaultValueSql("now()");
-            builder.Property<DateTime>("Updated").ValueGeneratedOnAddOrUpdate().HasDefaultValueSql("now()");
+            builder.Property<DateTime>("Inserted").HasDefaultValueSql("NOW()").ValueGeneratedOnAdd();
+            builder.Property<DateTime>("Updated").HasDefaultValueSql("NOW()").ValueGeneratedOnAddOrUpdate();
             builder.Property(c => c.Name).IsRequired();
             builder.Property(c => c.Surname).IsRequired();
             //Relations

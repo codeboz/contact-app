@@ -18,8 +18,8 @@ namespace CBZ.ContactApp.Data.Configuration
         public void Configure(EntityTypeBuilder<InfoType> builder)
         {
             //Shadow properties
-            builder.Property<DateTime>("Inserted").ValueGeneratedOnAdd().HasDefaultValueSql("now()");
-            builder.Property<DateTime>("Updated").ValueGeneratedOnAddOrUpdate().HasDefaultValueSql("now()");
+            builder.Property<DateTime>("Inserted").HasDefaultValueSql("NOW()").ValueGeneratedOnAdd();
+            builder.Property<DateTime>("Updated").HasDefaultValueSql("NOW()").ValueGeneratedOnAddOrUpdate();
             builder.Property(i => i.Name).IsRequired();
             builder.Property(i => i.Id).HasIdentityOptions(startValue: 100);
             //Relations

@@ -17,8 +17,9 @@ namespace CBZ.ContactApp.Data.Configuration
         public void Configure(EntityTypeBuilder<ReportRequest> builder)
         {
             //Shadow properties
-            builder.Property<DateTime>("Requested").ValueGeneratedOnAddOrUpdate().HasDefaultValueSql("now()");
+            builder.Property<DateTime>("Requested").HasDefaultValueSql("NOW()").ValueGeneratedOnAdd();
             builder.Property(rr => rr.Id).ValueGeneratedOnAdd();
+            builder.Property(rr => rr.ReportStateId).HasDefaultValue(1).ValueGeneratedOnAdd();
             //Relations
             builder.HasOne(rr => rr.ReportState);
             builder.HasOne(rr => rr.Report);
