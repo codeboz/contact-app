@@ -14,8 +14,7 @@ namespace CBZ.ContactApp.Test.Fixtures
             Random rnd = new Random();
             rnd.Next().ToString();
             var options = new DbContextOptionsBuilder<ContactDbContext>()
-                .UseInMemoryDatabase("ContactDatabase"+rnd.Next())
-                .Options;
+                .UseInMemoryDatabase(Guid.NewGuid().ToString()).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).Options;
             context = new ContactDbContext(options);
         }
 
