@@ -29,8 +29,18 @@ docker-compose up -d
     * Username:admin
     * pass:secret
 
-# RappitMq-Managemetn
+# RappitMq-Management
 * url: http://localhost:15672
 * eposta: admin
 * pass: secret
 
+# Postman example collections
+* https://www.getpostman.com/collections/4d17be68d86a58e18c0d
+
+
+# How to run
+```bash
+cd ./contact-app/CBZ.ContactApp
+dotnet run --project CBZ.ContactApp
+dotnet run --project CBZ.ContactApp.ReportGenerator
+```
