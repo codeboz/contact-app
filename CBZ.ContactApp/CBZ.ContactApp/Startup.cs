@@ -33,6 +33,7 @@ namespace CBZ.ContactApp
             services.AddScoped<IRepository<InfoType>, InfoTypeRepository>();
             services.AddScoped<IRepository<ReportRequest>, ReportRequestRepository>();
             services.AddScoped<IRepository<ReportState>, ReportStateRepository>();
+            services.AddScoped<IRepository<Report>, ReportRepository>();
             
             services.AddDbContext<ContactDbContext>( builder =>
             {
@@ -43,7 +44,8 @@ namespace CBZ.ContactApp
                         10,
                         TimeSpan.FromSeconds(30),
                         null);
-                } );
+                    
+                } ).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
             });
             
             services.AddControllers();
