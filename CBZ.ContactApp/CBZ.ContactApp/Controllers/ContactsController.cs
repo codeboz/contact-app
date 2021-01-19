@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.OData.Routing.Controllers;
 using CBZ.ContactApp.Data.Model;
 using CBZ.ContactApp.Data.Repository;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.OData.Formatter.Value;
 using Microsoft.Extensions.Logging;
 
 namespace CBZ.ContactApp.Controllers
@@ -86,17 +87,33 @@ namespace CBZ.ContactApp.Controllers
             return BadRequest();
         }
         
-        public ActionResult<Contact> Put(Guid key,[FromBody]Contact contact)
+        public ActionResult<Contact> Put(Guid key,[FromBody]Delta<Contact> contact)
         {
             try
             {
                 var cdb = _contactRepository.Find(key as object).Result;
-                if (cdb.Id == contact.Id)
-                {
-                    var c = _contactRepository.Update(contact);
-                    if (c.Exception != null) throw c.Exception;
-                    return c.Result == null ? BadRequest() : Ok(c.Result);
-                }
+                contact.Put(cdb);
+                var c = _contactRepository.Update(cdb);
+                if (c.Exception != null) throw c.Exception;
+                return c.Result == null ? BadRequest() : Ok(c.Result);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogWarning(exception,"Update problem");
+            }
+
+            return BadRequest();
+        }
+        
+        public ActionResult<Contact> Patch(Guid key,[FromBody]Delta<Contact> contact)
+        {
+            try
+            {
+                var cdb = _contactRepository.Find(key as object).Result;
+                contact.Patch(cdb);
+                var c = _contactRepository.Update(cdb);
+                if (c.Exception != null) throw c.Exception;
+                return c.Result == null ? BadRequest() : Ok(c.Result);
             }
             catch (Exception exception)
             {

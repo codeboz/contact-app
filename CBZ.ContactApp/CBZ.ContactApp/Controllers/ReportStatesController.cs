@@ -4,6 +4,7 @@ using CBZ.ContactApp.Data.Model;
 using CBZ.ContactApp.Data.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Formatter.Value;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Microsoft.Extensions.Logging;
@@ -70,17 +71,32 @@ namespace CBZ.ContactApp.Controllers
             return BadRequest();
         }
         
-        public ActionResult<ReportState> Put(int key,[FromBody] ReportState reportRequests)
+        public ActionResult<ReportState> Put(int key,[FromBody]Delta< ReportState > reportRequests)
         {
             try
             {
                 var rdb = _reportStateRepository.Find(key as object).Result;
-                if (rdb.Id == reportRequests.Id)
-                {
-                    var rs = _reportStateRepository.Update(reportRequests);
-                    if (rs.Exception != null) throw rs.Exception;
-                    return rs.Result == null ? (ActionResult<ReportState>)BadRequest() : Ok(rs.Result);
-                }
+                reportRequests.Put(rdb);
+                var rs = _reportStateRepository.Update(rdb);
+                if (rs.Exception != null) throw rs.Exception;
+                return rs.Result == null ? (ActionResult<ReportState>)BadRequest() : Ok(rs.Result);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogWarning(exception,"Update problem");
+            }
+            return BadRequest();
+        }
+        
+        public ActionResult<ReportState> Patch(int key,[FromBody]Delta< ReportState > reportRequests)
+        {
+            try
+            {
+                var rdb = _reportStateRepository.Find(key as object).Result;
+                reportRequests.Patch(rdb);
+                var rs = _reportStateRepository.Update(rdb);
+                if (rs.Exception != null) throw rs.Exception;
+                return rs.Result == null ? (ActionResult<ReportState>)BadRequest() : Ok(rs.Result);
             }
             catch (Exception exception)
             {

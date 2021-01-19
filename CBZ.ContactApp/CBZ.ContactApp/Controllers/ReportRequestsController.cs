@@ -5,6 +5,7 @@ using CBZ.ContactApp.Data.Model;
 using CBZ.ContactApp.Data.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Formatter.Value;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Microsoft.Extensions.Logging;
@@ -86,17 +87,15 @@ namespace CBZ.ContactApp.Controllers
             return BadRequest();
         }
         
-        public ActionResult<ReportRequest> Put(Guid key,[FromBody] ReportRequest reportRequests)
+        public ActionResult<ReportRequest> Put(Guid key,[FromBody]Delta<ReportRequest> reportRequests)
         {
             try
             {
                 var rrdb = _reportRequestRepository.Find(key as object).Result;
-                if (rrdb.Id == reportRequests.Id)
-                {
-                    var rr = _reportRequestRepository.Update(reportRequests);
-                    if (rr.Exception != null) throw rr.Exception;
-                    return rr.Result == null ? (ActionResult<ReportRequest>)BadRequest() : Ok(rr.Result);
-                }
+                reportRequests.Put(rrdb);
+                var rr = _reportRequestRepository.Update(rrdb);
+                if (rr.Exception != null) throw rr.Exception;
+                return rr.Result == null ? (ActionResult<ReportRequest>)BadRequest() : Ok(rr.Result);
             }
             catch (Exception exception)
             {
@@ -104,6 +103,24 @@ namespace CBZ.ContactApp.Controllers
             }
             return BadRequest();
         }
+        
+        public ActionResult<ReportRequest> Patch(Guid key,[FromBody]Delta<ReportRequest> reportRequests)
+        {
+            try
+            {
+                var rrdb = _reportRequestRepository.Find(key as object).Result;
+                reportRequests.Patch(rrdb);
+                var rr = _reportRequestRepository.Update(rrdb);
+                if (rr.Exception != null) throw rr.Exception;
+                return rr.Result == null ? (ActionResult<ReportRequest>)BadRequest() : Ok(rr.Result);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogWarning(exception,"Update problem");
+            }
+            return BadRequest();
+        }
+
 
         public ActionResult<ReportRequest> Delete(Guid key)
         {

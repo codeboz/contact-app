@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.OData.Routing.Controllers;
 using CBZ.ContactApp.Data.Model;
 using CBZ.ContactApp.Data.Repository;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.OData.Formatter.Value;
 using Microsoft.Extensions.Logging;
 
 namespace CBZ.ContactApp.Controllers
@@ -70,17 +71,32 @@ namespace CBZ.ContactApp.Controllers
             return BadRequest();
         }
         
-        public ActionResult<InfoType> Put(int key,[FromBody]InfoType infoTypes)
+        public ActionResult<InfoType> Put(int key,[FromBody]Delta<InfoType> infoTypes)
         {
             try
             {
                 var idb = _infoTypeRepository.Find(key as object).Result;
-                if(idb.Id==infoTypes.Id)
-                {
-                    var it = _infoTypeRepository.Update(infoTypes);
-                    if (it.Exception!=null) throw it.Exception;
-                    return it.Result == null ? (ActionResult<InfoType>)BadRequest() : Ok(it.Result);
-                }
+                infoTypes.Put(idb);
+                var it = _infoTypeRepository.Update(idb);
+                if (it.Exception!=null) throw it.Exception;
+                return it.Result == null ? (ActionResult<InfoType>)BadRequest() : Ok(it.Result);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogWarning(exception,"Update problem");
+            }
+            return BadRequest();
+        }
+        
+        public ActionResult<InfoType> Patch(int key,[FromBody]Delta<InfoType> infoTypes)
+        {
+            try
+            {
+                var idb = _infoTypeRepository.Find(key as object).Result;
+                infoTypes.Patch(idb);
+                var it = _infoTypeRepository.Update(idb);
+                if (it.Exception!=null) throw it.Exception;
+                return it.Result == null ? (ActionResult<InfoType>)BadRequest() : Ok(it.Result);
             }
             catch (Exception exception)
             {

@@ -4,6 +4,7 @@ using CBZ.ContactApp.Data.Model;
 using CBZ.ContactApp.Data.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Formatter.Value;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Microsoft.Extensions.Logging;
@@ -70,17 +71,32 @@ namespace CBZ.ContactApp.Controllers
             return BadRequest();
         }
         
-        public ActionResult<Report> Put(int key,[FromBody] Report reports)
+        public ActionResult<Report> Put(int key,[FromBody]Delta<Report> reports)
         {
             try
             {
                 var rdb = _reportRepository.Find(key as object).Result;
-                if (rdb.Id == reports.Id)
-                {
-                    var rs = _reportRepository.Update(reports);
-                    if (rs.Exception != null) throw rs.Exception;
-                    return rs.Result == null ? (ActionResult<Report>)BadRequest() : Ok(rs.Result);
-                }
+                reports.Put(rdb);
+                var rs = _reportRepository.Update(rdb);
+                if (rs.Exception != null) throw rs.Exception;
+                return rs.Result == null ? (ActionResult<Report>)BadRequest() : Ok(rs.Result);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogWarning(exception,"Update problem");
+            }
+            return BadRequest();
+        }
+        
+        public ActionResult<Report> Patch(int key,[FromBody]Delta<Report> reports)
+        {
+            try
+            {
+                var rdb = _reportRepository.Find(key as object).Result;
+                reports.Patch(rdb);
+                var rs = _reportRepository.Update(rdb);
+                if (rs.Exception != null) throw rs.Exception;
+                return rs.Result == null ? (ActionResult<Report>)BadRequest() : Ok(rs.Result);
             }
             catch (Exception exception)
             {

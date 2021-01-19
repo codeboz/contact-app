@@ -1,18 +1,18 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using CBZ.ContactApp.Data.Model;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using RestSharp;
+using Simple.OData.Client;
 
 namespace CBZ.ContactApp.ReportGenerator
 {
     class ReportGenerator
-    { 
-
+    {
         static void Main()
         {
             string env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
@@ -39,7 +39,9 @@ namespace CBZ.ContactApp.ReportGenerator
                 var msg = Encoding.UTF8.GetString(eventArgs.Body.ToArray());
                 Console.WriteLine($"{msg}");
                 //
+#pragma warning disable 4014
                 GenerateReport(config["Url:contactapp"],msg);
+#pragma warning restore 4014
             };
             channel.BasicConsume("reportGenerationQueue", true, consumer);
             Console.ReadLine();
@@ -47,83 +49,75 @@ namespace CBZ.ContactApp.ReportGenerator
             connection.Close();
         }
 
-        private static void GenerateReport(string contactApp,string msg)
+        private static async Task GenerateReport(string contactApp, string msg)
         {
-            ReportRequest reportRequest = JsonConvert.DeserializeObject<ReportRequest>(msg);
-            var url = contactApp+"/v1/Infos?$filter=Data eq '" + reportRequest.Location + "'&$count=true";
-            var getContactInfoByLocation = Get(url);
-            JObject jolocationInfo = JObject.Parse(getContactInfoByLocation);
-            int contactCount = jolocationInfo.GetValue("@odata.count")!.Value<int>();
-            string insertedReport;
-            if (contactCount == 0)
+            try
             {
-                Report r = new Report {Location = reportRequest.Location, PhoneNumberCount = 0, ContactCount = 0};
-                insertedReport=Post(contactApp,r);
-            }
-            else
-            {
-                Contact[] contacts = jolocationInfo.GetValue("value")!.Value<Contact[]>();
-                var url2 = contactApp+"/v1/Infos?$filter=(InfoTypeId eq 1) and (";
-                StringBuilder stringBuilder = new StringBuilder(url2);
-                foreach (var contact in contacts)
+                ReportRequest reportRequest = JsonConvert.DeserializeObject<ReportRequest>(msg);
+
+                var client = new ODataClient(contactApp + "/v1/");
+
+                var infos = await client
+                    .For<Info>()
+                    .Filter(x => x.Data == reportRequest.Location)
+                    .FindEntriesAsync();
+
+                var enumerableContact = infos as Info[] ?? infos.ToArray();
+                int contactCount = enumerableContact.Count();
+                Report report;
+                if (contactCount == 0)
                 {
-                    stringBuilder.Append("ContactId eq ")
-                        .Append(contact.Id)
-                        .Append(" or ");
+                    report  = await client
+                        .For<Report>()
+                        .Set(new Report
+                        {
+                            Location = reportRequest.Location,
+                            ContactCount = 0,
+                            PhoneNumberCount = 0
+                        })
+                        .InsertEntryAsync();
                 }
-                stringBuilder.Remove(stringBuilder.Length - 2, 2) //Remove last or
-                    .Append(")&$count=true");
+                else
+                {
+                    var manuelfilter = contactApp + "/v1/Infos?$filter=(InfoTypeId eq 1) and (";
+                    StringBuilder stringBuilder = new StringBuilder(manuelfilter);
+                    foreach (var info in enumerableContact)
+                    {
+                        stringBuilder.Append("ContactId eq ")
+                            .Append(info.ContactId.ToString())
+                            .Append(" or ");
+                    }
+
+                    stringBuilder.Remove(stringBuilder.Length - 4, 4) //Remove last or
+                        .Append(")");
+
+                    var phones = await client
+                        .FindEntriesAsync(stringBuilder.ToString());
+
+                    int phoneCount = phones.Count();
+
+                    report = await client
+                        .For<Report>()
+                        .Set(new Report
+                        {
+                            Location = reportRequest.Location,
+                            ContactCount = contactCount,
+                            PhoneNumberCount = phoneCount
+                        })
+                        .InsertEntryAsync();
+                }
                 
-                var getContactsPhoneNumbers = Get(stringBuilder.ToString());
-                Console.WriteLine(getContactsPhoneNumbers);
-                JObject joPhoneInfo = JObject.Parse(getContactsPhoneNumbers);
-                int phoneCount = joPhoneInfo.GetValue("@odata.count")!.Value<int>();
-                Report r = new Report {Location = reportRequest.Location, PhoneNumberCount = phoneCount, ContactCount = contactCount};
-                insertedReport=Post(contactApp,r);
+                    
+                var unused = await client
+                    .For<ReportRequest>()
+                    .Key(reportRequest.Id)
+                    .Set(new{ReportId=report.Id,ReportStateId=2})
+                    .UpdateEntryAsync();
             }
-            JObject joInsertedReport = JObject.Parse(insertedReport);
-            Report report = joInsertedReport.GetValue("value")!.Value<Report>();
-            reportRequest.ReportId = report.Id;
-            reportRequest.ReportStateId = 2;
-            Put(contactApp,reportRequest);
-        }
-        
-        private static string Put(string baseUrl,ReportRequest reportRequest)
-        {
-            var client = new RestClient(baseUrl+"/v1/ReportRequests("+reportRequest.Id+")");
-            client.Timeout = -1;
-            var request = new RestRequest(Method.PUT);
-            request.AddHeader("Content-Type", "application/json");
-            request.AddHeader("Accept", "application/json");
-            request.AddHeader("Prefer", "return=representation");
-            request.AddParameter("application/json", JsonConvert.SerializeObject(reportRequest) ,  ParameterType.RequestBody);
-            IRestResponse response = client.Execute(request);
-            Console.WriteLine(response.Content);
-            return response.Content;
-        }
-
-        private static string Post(string baseUrl,Report report)
-        {
-            var client = new RestClient(baseUrl+"/v1/Reports");
-            client.Timeout = -1;
-            var request = new RestRequest(Method.POST);
-            request.AddHeader("Content-Type", "application/json");
-            request.AddHeader("Accept", "application/json");
-            request.AddHeader("Prefer", "return=representation");
-            request.AddParameter("application/json", JsonConvert.SerializeObject(report),  ParameterType.RequestBody);
-            IRestResponse response = client.Execute(request);
-            Console.WriteLine(response.Content);
-            return response.Content;
-        }
-
-        private static string Get(string url)
-        {
-            var client = new RestClient(url);
-            client.Timeout = -1;
-            var request = new RestRequest(Method.GET);
-            IRestResponse response = client.Execute(request);
-            Console.WriteLine(response.Content);
-            return response.Content;
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+            }
         }
     }
 }

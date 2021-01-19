@@ -4,6 +4,7 @@ using CBZ.ContactApp.Data.Model;
 using CBZ.ContactApp.Data.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Formatter.Value;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Microsoft.Extensions.Logging;
@@ -69,17 +70,32 @@ namespace CBZ.ContactApp.Controllers
             return BadRequest();
         }
         
-        public ActionResult<Info> Put(Guid keyContactId,int keyInfoTypeId,[FromBody]Info info)
+        public ActionResult<Info> Put(Guid keyContactId,int keyInfoTypeId,[FromBody]Delta<Info> info)
         {
             try
             {
                 var idb = _infoRepository.Find(keyContactId as object,keyInfoTypeId as object).Result;
-                if (idb.ContactId == idb.ContactId && idb.InfoTypeId == idb.InfoTypeId )
-                {
-                    var i = _infoRepository.Update(info);
-                    if (i.Exception != null) throw i.Exception;
-                    return i.Result == null ? (ActionResult<Info>)BadRequest() : Ok(i.Result);
-                }
+                info.Put(idb);
+                var i = _infoRepository.Update(idb);
+                if (i.Exception != null) throw i.Exception;
+                return i.Result == null ? (ActionResult<Info>)BadRequest() : Ok(i.Result);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogWarning(exception,"Update problem");
+            }
+            return BadRequest();
+        }
+        
+        public ActionResult<Info> Patch(Guid keyContactId,int keyInfoTypeId,[FromBody]Delta<Info> info)
+        {
+            try
+            {
+                var idb = _infoRepository.Find(keyContactId as object,keyInfoTypeId as object).Result;
+                info.Patch(idb);
+                var i = _infoRepository.Update(idb);
+                if (i.Exception != null) throw i.Exception;
+                return i.Result == null ? (ActionResult<Info>)BadRequest() : Ok(i.Result);
             }
             catch (Exception exception)
             {
