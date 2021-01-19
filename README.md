@@ -8,8 +8,12 @@
 # Build containers
 ```bash
 cd ./contact-app/CBZ.ContactApp
-docker build -f ./ContactApp.dockerfile -t cbz-contactapp .
-docker build -f ./ReportGenerator.dockerfile -t cbz-reportgenerator .
+docker build -f ./ContactApp.dockerfile -t cbz-contactapp:1 .
+docker build -f ./ReportGenerator.dockerfile -t cbz-reportgenerator:1 .
 ```
 
 # Docker compose up
+```bash
+cd ./contact-app
+docker-compose up -d
+```

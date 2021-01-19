@@ -3,6 +3,7 @@ using System.Text;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using CBZ.ContactApp.Data.Model;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
@@ -10,12 +11,21 @@ using RestSharp;
 namespace CBZ.ContactApp.ReportGenerator
 {
     class ReportGenerator
-    {
+    { 
+
         static void Main()
         {
+            string env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            IConfigurationBuilder builder = new ConfigurationBuilder()
+                .AddJsonFile($"appsettings.json", true, true)
+                .AddJsonFile($"appsettings.{env}.json", true, true)
+                .AddEnvironmentVariables();
+
+            IConfigurationRoot config = builder.Build();
+            
             Console.WriteLine("Hello World! This is CBZ.ContactApp.ReportGenerator");
             var factory = new ConnectionFactory();
-            factory.Uri = new Uri("amqp://admin:secret@localhost:5672/");
+            factory.Uri = new Uri(config["Url:rabbitmq"]);
             var connection = factory.CreateConnection();
             var channel = connection.CreateModel();
             channel.ExchangeDeclare("contactAppExchange", ExchangeType.Fanout, true);
@@ -29,7 +39,7 @@ namespace CBZ.ContactApp.ReportGenerator
                 var msg = Encoding.UTF8.GetString(eventArgs.Body.ToArray());
                 Console.WriteLine($"{msg}");
                 //
-                GenerateReport(msg);
+                GenerateReport(config["Url:contactapp"],msg);
             };
             channel.BasicConsume("reportGenerationQueue", true, consumer);
             Console.ReadLine();
@@ -37,10 +47,10 @@ namespace CBZ.ContactApp.ReportGenerator
             connection.Close();
         }
 
-        private static void GenerateReport(string msg)
+        private static void GenerateReport(string contactApp,string msg)
         {
             ReportRequest reportRequest = JsonConvert.DeserializeObject<ReportRequest>(msg);
-            var url = "http://localhost:5000/v1/Infos?$filter=Data eq '" + reportRequest.Location + "'&$count=true";
+            var url = contactApp+"/v1/Infos?$filter=Data eq '" + reportRequest.Location + "'&$count=true";
             var getContactInfoByLocation = Get(url);
             JObject jolocationInfo = JObject.Parse(getContactInfoByLocation);
             int contactCount = jolocationInfo.GetValue("@odata.count")!.Value<int>();
@@ -48,12 +58,12 @@ namespace CBZ.ContactApp.ReportGenerator
             if (contactCount == 0)
             {
                 Report r = new Report {Location = reportRequest.Location, PhoneNumberCount = 0, ContactCount = 0};
-                insertedReport=Post(r);
+                insertedReport=Post(contactApp,r);
             }
             else
             {
                 Contact[] contacts = jolocationInfo.GetValue("value")!.Value<Contact[]>();
-                var url2 = "http://localhost:5000/v1/Infos?$filter=(InfoTypeId eq 1) and (";
+                var url2 = contactApp+"/v1/Infos?$filter=(InfoTypeId eq 1) and (";
                 StringBuilder stringBuilder = new StringBuilder(url2);
                 foreach (var contact in contacts)
                 {
@@ -69,18 +79,18 @@ namespace CBZ.ContactApp.ReportGenerator
                 JObject joPhoneInfo = JObject.Parse(getContactsPhoneNumbers);
                 int phoneCount = joPhoneInfo.GetValue("@odata.count")!.Value<int>();
                 Report r = new Report {Location = reportRequest.Location, PhoneNumberCount = phoneCount, ContactCount = contactCount};
-                insertedReport=Post(r);
+                insertedReport=Post(contactApp,r);
             }
             JObject joInsertedReport = JObject.Parse(insertedReport);
             Report report = joInsertedReport.GetValue("value")!.Value<Report>();
             reportRequest.ReportId = report.Id;
             reportRequest.ReportStateId = 2;
-            Put(reportRequest);
+            Put(contactApp,reportRequest);
         }
         
-        private static string Put(ReportRequest reportRequest)
+        private static string Put(string baseUrl,ReportRequest reportRequest)
         {
-            var client = new RestClient("http://localhost:5000/v1/ReportRequests("+reportRequest.Id+")");
+            var client = new RestClient(baseUrl+"/v1/ReportRequests("+reportRequest.Id+")");
             client.Timeout = -1;
             var request = new RestRequest(Method.PUT);
             request.AddHeader("Content-Type", "application/json");
@@ -92,9 +102,9 @@ namespace CBZ.ContactApp.ReportGenerator
             return response.Content;
         }
 
-        private static string Post(Report report)
+        private static string Post(string baseUrl,Report report)
         {
-            var client = new RestClient("http://localhost:5000/v1/Reports");
+            var client = new RestClient(baseUrl+"/v1/Reports");
             client.Timeout = -1;
             var request = new RestRequest(Method.POST);
             request.AddHeader("Content-Type", "application/json");

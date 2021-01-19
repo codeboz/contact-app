@@ -11,9 +11,16 @@ COPY CBZ.ContactApp.Test/*.csproj ./CBZ.ContactApp.Test/
 #
 RUN dotnet restore
 #
-# copy everything else and build app
-COPY CBZ.ContactApp.ReportGenerator/. ./CBZ.ReportGenerator/
+# copy everything else 
+COPY CBZ.ContactApp/. ./CBZ.ContactApp/
 COPY CBZ.ContactApp.Data/. ./CBZ.ContactApp.Data/
+COPY CBZ.ContactApp.ReportGenerator/. ./CBZ.ContactApp.ReportGenerator/
+COPY CBZ.ContactApp.Test/. ./CBZ.ContactApp.Test/
+#
+# make unit tests
+RUN dotnet test
+#
+# build contactapp
 #
 WORKDIR /app/CBZ.ContactApp.ReportGenerator
 RUN dotnet publish -c Release -o out

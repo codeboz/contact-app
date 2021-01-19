@@ -56,7 +56,7 @@ namespace CBZ.ContactApp
         private static void RabbitMqExchangeDeclare()
         {
             var factory = new ConnectionFactory();
-            factory.Uri = new Uri("amqp://admin:secret@localhost:5672");
+            factory.Uri = new Uri(Configuration["Url:rabbitmq"]);
             var connection = factory.CreateConnection();
             var channel = connection.CreateModel();
 
