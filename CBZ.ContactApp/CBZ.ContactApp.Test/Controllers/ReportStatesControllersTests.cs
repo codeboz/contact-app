@@ -6,6 +6,7 @@ using CBZ.ContactApp.Data.Repository;
 using CBZ.ContactApp.Test.Fixtures;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Formatter.Value;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
@@ -97,8 +98,10 @@ namespace CBZ.ContactApp.Test.Controllers
             var eid = ReportStateEntityTypeConfiguration.ReportStateSeed.ElementAt(1).Id;
             var e = repository.Find(eid as object).Result;
             e.Name = "Gg";
-            ActionResult<ReportState> result = controller.Put(e.Id,e);
-            result.Result.Should().BeOfType<OkObjectResult>();
+            var delta = new Delta<ReportState>(typeof(ReportState));
+            delta.TrySetPropertyValue(nameof(ReportState.Name),e.Name as object);
+            ActionResult<ReportState> result = controller.Put(e.Id,delta);
+            result.Result.Should().BeOfType<BadRequestResult>();
         }
         
         [Fact]
@@ -109,7 +112,40 @@ namespace CBZ.ContactApp.Test.Controllers
             var repository = new ReportStateRepository(fixture.context);
             var controller = new ReportStatesController(logger, repository);
             var e = ReportStateEntityTypeConfiguration.ReportStateSeed.ElementAt(1);
-            ActionResult<ReportState> result = controller.Put(e.Id,e);
+            var delta = new Delta<ReportState>(typeof(ReportState));
+            delta.TrySetPropertyValue(nameof(ReportState.Name),e.Name as object);
+            ActionResult<ReportState> result = controller.Put(e.Id,delta);
+            result.Result.Should().BeOfType<BadRequestResult>();
+        }
+        
+        [Fact]
+        public void Controller_Patch_Should_Be_OkResult()
+        {
+            var fixture = new DbContextFixture();
+            var logger = new Mock<ILogger<ReportStatesController>>().Object;
+            fixture.PopulateAll();
+            var repository = new ReportStateRepository(fixture.context);
+            var controller = new ReportStatesController(logger, repository);
+            var eid = ReportStateEntityTypeConfiguration.ReportStateSeed.ElementAt(1).Id;
+            var e = repository.Find(eid as object).Result;
+            e.Name = "Gg";
+            var delta = new Delta<ReportState>(typeof(ReportState));
+            delta.TrySetPropertyValue(nameof(ReportState.Name),e.Name as object);
+            ActionResult<ReportState> result = controller.Patch(e.Id,delta);
+            result.Result.Should().BeOfType<OkObjectResult>();
+        }
+        
+        [Fact]
+        public void Controller_Patch_Should_Be_BadRequest()
+        {
+            var fixture = new DbContextFixture();
+            var logger = new Mock<ILogger<ReportStatesController>>().Object;
+            var repository = new ReportStateRepository(fixture.context);
+            var controller = new ReportStatesController(logger, repository);
+            var e = ReportStateEntityTypeConfiguration.ReportStateSeed.ElementAt(1);
+            var delta = new Delta<ReportState>(typeof(ReportState));
+            delta.TrySetPropertyValue(nameof(ReportState.Name),e.Name as object);
+            ActionResult<ReportState> result = controller.Patch(e.Id,delta);
             result.Result.Should().BeOfType<BadRequestResult>();
         }
         

@@ -56,17 +56,7 @@ namespace CBZ.ContactApp.Test.Repository
             Assert.Equal(4,count);
         }
         
-        [Fact]
-        public void Find_And_Where_Contact_Should_Be_Same()
-        {
-            fixture.PopulateAll();
-            var repository = new ContactRepository(fixture.context);
-            var entityInsertedId = ContactEntityTypeConfiguration.ContactSeed.ElementAt(2).Id;
-            var entityFind = repository.Find(entityInsertedId as object).Result;
-            var entityWhere = repository.Where(e=>e.Id==entityInsertedId).First();
-            Assert.Equal(entityFind,entityWhere);
-        }
-        
+
         [Fact]
         public void Update_the_Name_Of_Contact_Should_Not_Be_Same()
         {

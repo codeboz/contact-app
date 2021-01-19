@@ -7,6 +7,7 @@ using CBZ.ContactApp.Data.Repository;
 using CBZ.ContactApp.Test.Fixtures;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Formatter.Value;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
@@ -113,7 +114,7 @@ namespace CBZ.ContactApp.Test.Controllers
         }
         
         [Fact]
-        public void Controller_Put_Should_Be_OkResult()
+        public void Controller_Put_Should_Be_badResult()
         {
             var fixture = new DbContextFixture();
             var logger = new Mock<ILogger<ContactsController>>().Object;
@@ -123,8 +124,12 @@ namespace CBZ.ContactApp.Test.Controllers
             var id = ContactEntityTypeConfiguration.ContactSeed.ElementAt(2).Id;
             var e = repository.Find(id as object).Result;
             e.Name = "Gg";
-            ActionResult<Contact> result = controller.Put(e.Id,e);
-            result.Result.Should().BeOfType<OkObjectResult>();
+            var delta = new Delta<Contact>(typeof(Contact));
+            delta.TrySetPropertyValue(nameof(Contact.Name),"AVSD");
+            delta.TrySetPropertyValue(nameof(Contact.Surname),"AVSD");
+            delta.TrySetPropertyValue(nameof(Contact.Company),"AVSD");
+            ActionResult<Contact> result = controller.Put(e.Id,delta);
+            result.Result.Should().BeOfType<BadRequestResult>();
         }
         
         [Fact]
@@ -135,7 +140,40 @@ namespace CBZ.ContactApp.Test.Controllers
             var repository = new ContactRepository(fixture.context);
             var controller = new ContactsController(logger, repository);
             var e = ContactEntityTypeConfiguration.ContactSeed.ElementAt(2);
-            ActionResult<Contact> result = controller.Put(e.Id,e);
+            var delta = new Delta<Contact>(typeof(Contact));
+            delta.TrySetPropertyValue(nameof(Contact.Name),e.Name);
+            ActionResult<Contact> result = controller.Put(e.Id,delta);
+            result.Result.Should().BeOfType<BadRequestResult>();
+        }
+        
+        [Fact]
+        public void Controller_Patch_Should_Be_OkResult()
+        {
+            var fixture = new DbContextFixture();
+            var logger = new Mock<ILogger<ContactsController>>().Object;
+            fixture.PopulateAll();
+            var repository = new ContactRepository(fixture.context);
+            var controller = new ContactsController(logger, repository);
+            var id = ContactEntityTypeConfiguration.ContactSeed.ElementAt(2).Id;
+            var e = repository.Find(id as object).Result;
+            e.Name = "Gg";
+            var delta = new Delta<Contact>(typeof(Contact));
+            delta.TrySetPropertyValue(nameof(Contact.Name),e.Name);
+            ActionResult<Contact> result = controller.Patch(e.Id,delta);
+            result.Result.Should().BeOfType<OkObjectResult>();
+        }
+        
+        [Fact]
+        public void Controller_Patch_Should_Be_BadRequest()
+        {
+            var fixture = new DbContextFixture();
+            var logger = new Mock<ILogger<ContactsController>>().Object;
+            var repository = new ContactRepository(fixture.context);
+            var controller = new ContactsController(logger, repository);
+            var e = ContactEntityTypeConfiguration.ContactSeed.ElementAt(2);
+            var delta = new Delta<Contact>(typeof(Contact));
+            delta.TrySetPropertyValue(nameof(Contact.Name),e.Name);
+            ActionResult<Contact> result = controller.Patch(e.Id,delta);
             result.Result.Should().BeOfType<BadRequestResult>();
         }
         

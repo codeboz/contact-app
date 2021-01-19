@@ -6,6 +6,7 @@ using CBZ.ContactApp.Data.Repository;
 using CBZ.ContactApp.Test.Fixtures;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Formatter.Value;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
@@ -87,7 +88,7 @@ namespace CBZ.ContactApp.Test.Controllers
         }
         
         [Fact]
-        public void Controller_Put_Should_Be_OkResult()
+        public void Controller_Put_Should_Be_badRequest()
         {
             var fixture = new DbContextFixture();
             var logger = new Mock<ILogger<InfosController>>().Object;
@@ -97,8 +98,10 @@ namespace CBZ.ContactApp.Test.Controllers
             var entity = InfoEntityTypeConfiguration.InfoSeed.ElementAt(1);
             var e = repository.Find(entity.ContactId as object,entity.InfoTypeId as object).Result;
             e.Data = "Gg";
-            ActionResult<Info> result = controller.Put(e.ContactId,e.InfoTypeId,e);
-            result.Result.Should().BeOfType<OkObjectResult>();
+            var delta = new Delta<Info>(typeof(Info));
+            delta.TrySetPropertyValue(nameof(Info.Data), e.Data);
+            ActionResult<Info> result = controller.Put(e.ContactId,e.InfoTypeId,delta);
+            result.Result.Should().BeOfType<BadRequestResult>();
         }
         
         [Fact]
@@ -109,7 +112,40 @@ namespace CBZ.ContactApp.Test.Controllers
             var repository = new InfoRepository(fixture.context);
             var controller = new InfosController(logger, repository);
             var e = InfoEntityTypeConfiguration.InfoSeed.ElementAt(2);
-            ActionResult<Info> result = controller.Put(e.ContactId,e.InfoTypeId,e);
+            var delta = new Delta<Info>(typeof(Info));
+            delta.TrySetPropertyValue(nameof(Info.Data), e.Data);
+            ActionResult<Info> result = controller.Put(e.ContactId,e.InfoTypeId,delta);
+            result.Result.Should().BeOfType<BadRequestResult>();
+        }
+        
+        [Fact]
+        public void Controller_Patch_Should_Be_OkResult()
+        {
+            var fixture = new DbContextFixture();
+            var logger = new Mock<ILogger<InfosController>>().Object;
+            fixture.PopulateAll();
+            var repository = new InfoRepository(fixture.context);
+            var controller = new InfosController(logger, repository);
+            var entity = InfoEntityTypeConfiguration.InfoSeed.ElementAt(1);
+            var e = repository.Find(entity.ContactId as object,entity.InfoTypeId as object).Result;
+            e.Data = "Gg";
+            var delta = new Delta<Info>(typeof(Info));
+            delta.TrySetPropertyValue(nameof(Info.Data), e.Data);
+            ActionResult<Info> result = controller.Patch(e.ContactId,e.InfoTypeId,delta);
+            result.Result.Should().BeOfType<OkObjectResult>();
+        }
+        
+        [Fact]
+        public void Controller_Patch_Should_Be_BadRequest()
+        {
+            var fixture = new DbContextFixture();
+            var logger = new Mock<ILogger<InfosController>>().Object;
+            var repository = new InfoRepository(fixture.context);
+            var controller = new InfosController(logger, repository);
+            var e = InfoEntityTypeConfiguration.InfoSeed.ElementAt(2);
+            var delta = new Delta<Info>(typeof(Info));
+            delta.TrySetPropertyValue(nameof(Info.Data), e.Data);
+            ActionResult<Info> result = controller.Patch(e.ContactId,e.InfoTypeId,delta);
             result.Result.Should().BeOfType<BadRequestResult>();
         }
         

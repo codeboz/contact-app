@@ -6,6 +6,7 @@ using CBZ.ContactApp.Data.Repository;
 using CBZ.ContactApp.Test.Fixtures;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Formatter.Value;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
@@ -86,7 +87,7 @@ namespace CBZ.ContactApp.Test.Controllers
         }
         
         [Fact]
-        public void Controller_Put_Should_Be_OkResult()
+        public void Controller_Put_Should_Be_badRequest()
         {
             var fixture = new DbContextFixture();
             var logger = new Mock<ILogger<ReportRequestsController>>().Object;
@@ -96,8 +97,10 @@ namespace CBZ.ContactApp.Test.Controllers
             var eid = ReportRequestEntityTypeConfiguration.ReportRequestSeed.ElementAt(1).Id;
             var e = repository.Find(eid as object).Result;
             e.Location = "Gg";
-            ActionResult<ReportRequest> result = controller.Put(eid,e);
-            result.Result.Should().BeOfType<OkObjectResult>();
+            var delta = new Delta<ReportRequest>(typeof(ReportRequest));
+            delta.TrySetPropertyValue(nameof(ReportRequest.Location), e.Location);
+            ActionResult<ReportRequest> result = controller.Put(e.Id,delta);
+            result.Result.Should().BeOfType<BadRequestResult>();
         }
         
         [Fact]
@@ -108,7 +111,40 @@ namespace CBZ.ContactApp.Test.Controllers
             var repository = new ReportRequestRepository(fixture.context);
             var controller = new ReportRequestsController(logger, repository);
             var e = ReportRequestEntityTypeConfiguration.ReportRequestSeed.ElementAt(0);
-            ActionResult<ReportRequest> result = controller.Put(e.Id,e);
+            var delta = new Delta<ReportRequest>(typeof(ReportRequest));
+            delta.TrySetPropertyValue(nameof(ReportRequest.Location), e.Location);
+            ActionResult<ReportRequest> result = controller.Put(e.Id,delta);
+            result.Result.Should().BeOfType<BadRequestResult>();
+        }
+        
+        [Fact]
+        public void Controller_Patch_Should_Be_OkResult()
+        {
+            var fixture = new DbContextFixture();
+            var logger = new Mock<ILogger<ReportRequestsController>>().Object;
+            fixture.PopulateAll();
+            var repository = new ReportRequestRepository(fixture.context);
+            var controller = new ReportRequestsController(logger, repository);
+            var eid = ReportRequestEntityTypeConfiguration.ReportRequestSeed.ElementAt(1).Id;
+            var e = repository.Find(eid as object).Result;
+            e.Location = "Gg";
+            var delta = new Delta<ReportRequest>(typeof(ReportRequest));
+            delta.TrySetPropertyValue(nameof(ReportRequest.Location), e.Location);
+            ActionResult<ReportRequest> result = controller.Patch(e.Id,delta);
+            result.Result.Should().BeOfType<OkObjectResult>();
+        }
+        
+        [Fact]
+        public void Controller_Patch_Should_Be_BadRequest()
+        {
+            var fixture = new DbContextFixture();
+            var logger = new Mock<ILogger<ReportRequestsController>>().Object;
+            var repository = new ReportRequestRepository(fixture.context);
+            var controller = new ReportRequestsController(logger, repository);
+            var e = ReportRequestEntityTypeConfiguration.ReportRequestSeed.ElementAt(0);
+            var delta = new Delta<ReportRequest>(typeof(ReportRequest));
+            delta.TrySetPropertyValue(nameof(ReportRequest.Location), e.Location);
+            ActionResult<ReportRequest> result = controller.Patch(e.Id,delta);
             result.Result.Should().BeOfType<BadRequestResult>();
         }
         

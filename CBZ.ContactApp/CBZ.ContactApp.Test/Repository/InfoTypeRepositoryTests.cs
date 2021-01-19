@@ -51,17 +51,7 @@ namespace CBZ.ContactApp.Test.Repository
             Assert.Equal(2,count);
         }
 
-         [Fact]
-         public void Find_And_Where_InfoType_Should_Be_Same()
-         {
-             fixture.PopulateAll();
-             var repository = new InfoTypeRepository(fixture.context);
-             var id = InfoTypeEntityTypeConfiguration.InfoTypeSeed.ElementAt(2).Id;
-             var entityFind = repository.Find(id as object).Result;
-             var entityWhere = repository.Where(e=>e.Id==id).First();
-             Assert.Equal(entityFind,entityWhere);
-         }
-
+        
          [Fact]
          public void Update_the_Data_Of_InfoType_Should_Not_Be_Same()
          {
