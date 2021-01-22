@@ -1,0 +1,4 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: [ 'build', '-t', 'gcr.io/cbz-contact-app/cbz-contact-app:v1','-f', 'ContactApp.dockerfile', '.']
+images: ['gcr.io/cbz-contact-app/cbz-contact-app:v1']

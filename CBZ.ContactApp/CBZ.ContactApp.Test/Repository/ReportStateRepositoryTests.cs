@@ -50,18 +50,7 @@ namespace CBZ.ContactApp.Test.Repository
             Assert.Equal(1,count);
         }
 
-         [Fact]
-         public void Find_And_Where_ReportState_Should_Be_Same()
-         {
-             fixture.PopulateAll();
-             var repository = new ReportStateRepository(fixture.context);
-             var id = ReportStateEntityTypeConfiguration.ReportStateSeed.ElementAt(1).Id;
-             var entityFind = repository.Find(id as object).Result;
-             var entityWhere = repository.Where(e=>e.Id==id).First();
-             Assert.Equal(entityFind,entityWhere);
-         }
-
-         [Fact]
+        [Fact]
          public void Update_the_Data_Of_ReportState_Should_Not_Be_Same()
          {
              fixture.PopulateAll();
