@@ -1,4 +1,9 @@
 steps:
 - name: 'gcr.io/cloud-builders/docker'
   args: [ 'build', '-t', 'gcr.io/cbz-contact-app/cbz-contact-app:v1','-f', 'ContactApp.dockerfile', '.']
-images: ['gcr.io/cbz-contact-app/cbz-contact-app:v1']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/cbz-contact-app/cbz-contact-app:v1']
+- name: 'gcr.io/cloud-builders/docker'
+  args: [ 'build', '-t', 'gcr.io/cbz-contact-app/cbz-report-gen:v1','-f', 'ReportGenerator.dockerfile', '.']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/cbz-contact-app/cbz-report-gen:v1']
