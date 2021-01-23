@@ -44,3 +44,4 @@ cd ./contact-app/CBZ.ContactApp
 dotnet run --project CBZ.ContactApp
 dotnet run --project CBZ.ContactApp.ReportGenerator
 ```
+
