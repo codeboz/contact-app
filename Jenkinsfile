@@ -17,10 +17,10 @@ pipeline {
     stage('Building images') {
       steps{
         script {
-          contact-app-image = docker.build contact-app-image-name
+          contact-app-image = docker.build(contact-app-image-name,"-f CBZ.ContactApp/ContactApp.dockerfile  CBZ.ContactApp")
         }
         script {
-          report-gen-image = docker.build report-gen-image-name
+          report-gen-image = docker.build(report-gen-image-name,"-f CBZ.ContactApp/ReportGenerator.dockerfile  CBZ.ContactApp")
         }
       }
     }
